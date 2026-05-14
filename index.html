@@ -2,30 +2,29 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
     
     <!-- Primary Meta Tags -->
     <title>Devtrix | Next Gen Utility Hub - AI Chat, Music Lab & Live Sports</title>
     <meta name="title" content="Devtrix v3 - Next Generation Utility Hub">
-    <meta name="description" content="Devtrix is an all-in-one utility platform featuring AI-powered chat, music search with lyrics, live sports scores, APK downloads, font styling tools, and anime quotes. Built for developers and tech enthusiasts.">
+    <meta name="description" content="Devtrix is an all-in-one utility platform featuring AI-powered chat, music search with lyrics, live sports scores, APK downloads, font styling tools, and anime quotes. Built for developers and tech enthusiasts by Exton from Zimbabwe.">
     
     <!-- Keywords -->
     <meta name="keywords" content="devtrix, AI chat, music search, lyrics finder, live sports scores, APK downloader, font stylist, anime quotes, utility hub, developer tools, music lab, football arena, web app">
     
     <!-- Author & Creator Information -->
-    <meta name="author" content="Extontony">
-    <meta name="creator" content="Extontony, PrinceTechn, David Cyril">
-    <meta name="publisher" content="Extontony OS">
+    <meta name="author" content="Exton">
+    <meta name="creator" content="Exton">
     
     <!-- Contact Information -->
-    <meta name="contact" content="support@devtrix.io">
-    <meta name="email" content="contact@devtrix.io">
+    <meta name="contact" content="Muyambiexton@gmail.com">
+    <meta name="email" content="Muyambiexton@gmail.com">
     
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://devtrix.io">
     <meta property="og:title" content="Devtrix v3 - Next Generation Utility Hub">
-    <meta property="og:description" content="Experience the ultimate utility platform with AI chat, music search, live sports, APK downloads, and more. Built for developers, by developers.">
+    <meta property="og:description" content="Experience the ultimate utility platform with AI chat, music search, live sports, APK downloads, and more. Made with love by Exton from Zimbabwe.">
     <meta property="og:image" content="https://devtrix.io/og-image.png">
     <meta property="og:site_name" content="Devtrix">
     
@@ -35,7 +34,6 @@
     <meta property="twitter:title" content="Devtrix v3 - Next Generation Utility Hub">
     <meta property="twitter:description" content="Experience the ultimate utility platform with AI chat, music search, live sports, APK downloads, and more.">
     <meta property="twitter:image" content="https://devtrix.io/twitter-image.png">
-    <meta property="twitter:creator" content="@Extontony">
     
     <!-- Additional Meta Tags -->
     <meta name="robots" content="index, follow">
@@ -64,6 +62,14 @@
             background: #020617; 
             color: #f8fafc; 
             font-family: 'Plus Jakarta Sans', sans-serif; 
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        main {
+            flex: 1;
             overflow: hidden;
         }
 
@@ -116,6 +122,7 @@
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid rgba(255, 255, 255, 0.08);
             backdrop-filter: blur(5px);
+            word-wrap: break-word;
         }
         .user-message { flex-direction: row-reverse; align-self: flex-end; }
         .user-message .bubble {
@@ -123,9 +130,28 @@
             background: rgba(245, 158, 11, 0.05);
         }
         .ai-message { align-self: flex-start; }
+
+        /* Footer */
+        footer {
+            background: rgba(15, 23, 42, 0.9);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 1.5rem;
+            font-size: 0.875rem;
+            flex-shrink: 0;
+        }
+
+        @media (max-width: 640px) {
+            body {
+                font-size: 14px;
+            }
+            footer {
+                padding: 1rem;
+                font-size: 0.75rem;
+            }
+        }
     </style>
 </head>
-<body class="flex h-screen">
+<body class="flex flex-col h-screen">
 
     <!-- Mobile Header -->
     <div class="md:hidden fixed top-0 w-full glass-panel z-50 p-4 flex justify-between items-center">
@@ -143,7 +169,7 @@
     <aside id="sidebar" class="fixed md:relative w-72 h-full glass-panel flex flex-col p-6 shadow-2xl">
         <div class="mb-12 hidden md:block">
             <h1 class="text-2xl font-extrabold tracking-tighter italic">DEVTRIX <span class="text-indigo-500">v3</span></h1>
-            <p class="text-[10px] text-slate-500 uppercase tracking-widest mt-1">Extontony OS Integrated</p>
+            <p class="text-[10px] text-slate-500 uppercase tracking-widest mt-1">Made with ❤️ by Exton</p>
         </div>
 
         <nav class="flex-1 space-y-1 overflow-y-auto">
@@ -174,28 +200,28 @@
             <div class="flex items-center gap-3 p-2 bg-white/5 rounded-2xl">
                 <div class="w-10 h-10 rounded-xl gradient-btn flex items-center justify-center font-bold">E</div>
                 <div>
-                    <p class="text-xs font-bold">Extontony User</p>
-                    <p class="text-[10px] text-slate-400">Pro Developer</p>
+                    <p class="text-xs font-bold">Exton</p>
+                    <p class="text-[10px] text-slate-400">Zimbabwe 🇿🇼</p>
                 </div>
             </div>
             <!-- Contact Links Footer -->
             <div class="mt-4 pt-4 border-t border-white/5 text-[10px] text-slate-500 space-y-1">
-                <p>📧 <a href="mailto:contact@devtrix.io" class="text-indigo-400 hover:text-indigo-300">contact@devtrix.io</a></p>
-                <p>🔗 <a href="https://devtrix.io" target="_blank" class="text-indigo-400 hover:text-indigo-300">devtrix.io</a></p>
+                <p>📧 <a href="mailto:Muyambiexton@gmail.com" class="text-indigo-400 hover:text-indigo-300">Muyambiexton@gmail.com</a></p>
+                <p>📱 <a href="tel:+263777237953" class="text-indigo-400 hover:text-indigo-300">+263 77 723 7953</a></p>
                 <p class="text-slate-600 mt-2">© 2026 Devtrix. All rights reserved.</p>
             </div>
         </div>
     </aside>
 
-    <main class="flex-1 flex flex-col pt-20 md:pt-8 px-6 md:px-12 pb-12 overflow-hidden">
+    <main class="flex-1 flex flex-col pt-20 md:pt-8 px-4 md:px-12 pb-20 md:pb-12 overflow-hidden">
         
         <!-- Dashboard / Home -->
         <section id="home" class="page-content overflow-y-auto h-full pr-2">
             <div class="max-w-5xl">
                 <div class="p-12 rounded-[2rem] bg-indigo-600/10 border border-indigo-500/20 mb-12">
                     <h2 class="text-5xl font-black mb-4">The Next Gen <br><span class="text-indigo-400 text-3xl md:text-5xl">Utility Hub.</span></h2>
-                    <p class="text-slate-400 max-w-lg mb-8">Direct node connection to PrinceTechn & David Cyril clusters. All-in-one platform for developers, music lovers, sports enthusiasts, and tech creators.</p>
-                    <div class="flex gap-4">
+                    <p class="text-slate-400 max-w-lg mb-8">All-in-one platform for developers, music lovers, sports enthusiasts, and tech creators. Made with love from Zimbabwe.</p>
+                    <div class="flex gap-4 flex-wrap">
                         <button onclick="navTo('ai-chat')" class="gradient-btn px-6 py-3 rounded-xl font-bold">Launch AI</button>
                         <button onclick="navTo('football')" class="bg-white/5 border border-white/10 px-6 py-3 rounded-xl font-bold">Live Scores</button>
                     </div>
@@ -340,6 +366,20 @@
         </section>
 
     </main>
+
+    <!-- Footer -->
+    <footer class="w-full">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="text-center md:text-left">
+                <p class="text-slate-400">Made with ❤️ by <span class="text-indigo-400 font-bold">Exton</span> • Proudly <span class="text-yellow-400 font-bold">Zimbabwean 🇿🇼</span></p>
+            </div>
+            <div class="flex gap-6 text-sm">
+                <a href="mailto:Muyambiexton@gmail.com" class="text-slate-400 hover:text-indigo-400 transition">📧 Email</a>
+                <a href="tel:+263777237953" class="text-slate-400 hover:text-indigo-400 transition">📱 Call</a>
+                <span class="text-slate-600">© 2026 Devtrix</span>
+            </div>
+        </div>
+    </footer>
 
     <script>
         // API CONFIG
