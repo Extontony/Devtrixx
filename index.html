@@ -235,7 +235,7 @@
                     </div>
                     <div class="card-glow glass-panel p-6 rounded-2xl">
                         <h3 class="text-lg font-bold text-pink-500 mb-2">🎵 Music Lab</h3>
-                        <p class="text-slate-400 text-sm">Search millions of songs, view lyrics, and download MP3s instantly from our music cluster.</p>
+                        <p class="text-slate-400 text-sm">Search millions of songs and download MP3s instantly from our music cluster.</p>
                     </div>
                     <div class="card-glow glass-panel p-6 rounded-2xl">
                         <h3 class="text-lg font-bold text-emerald-500 mb-2">⚽ Live Arena</h3>
@@ -503,26 +503,20 @@
             if (e.key === 'Enter') handleAiSend();
         });
 
-        // --- MUSIC & LYRICS INTEGRATION ---
+        // --- MUSIC LAB INTEGRATION (NO LYRICS) ---
         async function searchMusic() {
             const query = document.getElementById('musicIn').value;
             const out = document.getElementById('musicOut');
             if(!query) return;
 
-            out.innerHTML = `<div class="p-20 text-center animate-pulse text-indigo-400">Syncing with Music & Lyric Clusters...</div>`;
+            out.innerHTML = `<div class="p-20 text-center animate-pulse text-indigo-400">Syncing with Music Cluster...</div>`;
 
             try {
-                const [audioRes, lyricsRes] = await Promise.all([
-                    fetch(`${CYRIL_BASE}/play?query=${encodeURIComponent(query)}`),
-                    fetch(`${PRINCE_BASE}/search/lyricsv2?apikey=${PRINCE_KEY}&query=${encodeURIComponent(query)}`)
-                ]);
-
+                const audioRes = await fetch(`${CYRIL_BASE}/play?query=${encodeURIComponent(query)}`);
                 const audioData = await audioRes.json();
-                const lyricsData = await lyricsRes.json();
 
                 if(audioData.status) {
                     const track = audioData.result;
-                    const lyrics = lyricsData.status ? lyricsData.result.lyrics : "No lyric data found for this track.";
 
                     out.innerHTML = `
                         <div class="card-glow glass-panel p-6 rounded-3xl flex flex-col md:flex-row items-center gap-8">
@@ -538,13 +532,6 @@
                                     <i class="fa fa-download"></i> DOWNLOAD MP3
                                 </a>
                             </div>
-                        </div>
-                        <div class="glass-panel p-8 rounded-3xl border border-white/5">
-                            <div class="flex justify-between items-center mb-6">
-                                <h4 class="text-xs uppercase tracking-[0.3em] text-slate-500 font-black">Lyric Analysis</h4>
-                                <i class="fa fa-quote-right text-indigo-500/20 text-2xl"></i>
-                            </div>
-                            <div class="text-slate-300 leading-relaxed text-lg whitespace-pre-wrap font-light italic">${lyrics}</div>
                         </div>
                     `;
                 } else {
