@@ -1,59 +1,24 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
     
-    <!-- Primary Meta Tags -->
-    <title>Devtrix | Next Gen Utility Hub - AI Chat, Music Lab & Live Sports</title>
+    <title>Devtrix | Next Gen Utility Hub - AI, Music, Sports, TV & Logos</title> 
     <meta name="title" content="Devtrix v3 - Next Generation Utility Hub">
-    <meta name="description" content="Devtrix is an all-in-one utility platform featuring AI-powered chat, music search with lyrics, live sports scores, APK downloads, font styling tools, and anime quotes. Built for developers and tech enthusiasts by Exton from Zimbabwe.">
+    <meta name="description" content="Devtrix is an all-in-one utility platform featuring AI-powered chat, music search, live sports, TV streaming, logo design, APK downloads, and more.">
     
-    <!-- Keywords -->
-    <meta name="keywords" content="devtrix, AI chat, music search, lyrics finder, live sports scores, APK downloader, font stylist, anime quotes, utility hub, developer tools, music lab, football arena, web app">
-    
-    <!-- Author & Creator Information -->
     <meta name="author" content="Exton">
-    <meta name="creator" content="Exton">
     
-    <!-- Contact Information -->
-    <meta name="contact" content="Muyambiexton@gmail.com">
-    <meta name="email" content="Muyambiexton@gmail.com">
-    
-    <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://devtrix.io">
-    <meta property="og:title" content="Devtrix v3 - Next Generation Utility Hub">
-    <meta property="og:description" content="Experience the ultimate utility platform with AI chat, music search, live sports, APK downloads, and more. Made with love by Exton from Zimbabwe.">
-    <meta property="og:image" content="https://devtrix.io/og-image.png">
-    <meta property="og:site_name" content="Devtrix">
-    
-    <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:url" content="https://devtrix.io">
-    <meta property="twitter:title" content="Devtrix v3 - Next Generation Utility Hub">
-    <meta property="twitter:description" content="Experience the ultimate utility platform with AI chat, music search, live sports, APK downloads, and more.">
-    <meta property="twitter:image" content="https://devtrix.io/twitter-image.png">
-    
-    <!-- Additional Meta Tags -->
-    <meta name="robots" content="index, follow">
-    <meta name="language" content="English">
-    <meta name="revisit-after" content="7 days">
     <meta name="theme-color" content="#020617">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Devtrix">
-    
-    <!-- Canonical URL -->
-    <link rel="canonical" href="https://devtrix.io">
-    
-    <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="https://devtrix.io/favicon.ico">
-    <link rel="apple-touch-icon" href="https://devtrix.io/apple-touch-icon.png">
     
-    <!-- Stylesheets -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap');
@@ -126,12 +91,12 @@
         }
         .user-message { flex-direction: row-reverse; align-self: flex-end; }
         .user-message .bubble {
-            border-color: rgba(245, 158, 11, 0.3); /* Amber-500 opacity */
+            border-color: rgba(245, 158, 11, 0.3);
             background: rgba(245, 158, 11, 0.05);
         }
         .ai-message { align-self: flex-start; }
 
-        /* Footer */
+        /* Auth Pages & Footer */
         footer {
             background: rgba(15, 23, 42, 0.9);
             border-top: 1px solid rgba(255, 255, 255, 0.05);
@@ -140,254 +105,781 @@
             flex-shrink: 0;
         }
 
-        @media (max-width: 640px) {
-            body {
-                font-size: 14px;
-            }
-            footer {
-                padding: 1rem;
-                font-size: 0.75rem;
-            }
+        .auth-container { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 2rem; }
+        .auth-form { width: 100%; max-width: 420px; }
+        .input-field {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #f8fafc;
+            padding: 0.75rem 1rem;
+            border-radius: 0.75rem;
+            width: 100%;
+            transition: all 0.3s ease;
+            font-family: 'Plus Jakarta Sans', sans-serif;
         }
+        .input-field:focus { outline: none; border-color: #6366f1; box-shadow: 0 0 20px rgba(99, 102, 241, 0.3); background: rgba(30, 41, 59, 0.8); }
+        .input-field::placeholder { color: #64748b; }
+        .error-message { color: #ef4444; font-size: 0.875rem; margin-top: 0.5rem; }
+        .success-message { color: #10b981; font-size: 0.875rem; margin-top: 0.5rem; }
+
+        /* Live TV Streamer Styles */
+        .video-wrapper {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            background: #000;
+        }
+        .video-placeholder {
+            position: absolute;
+            inset: 0;
+            background: rgba(15, 15, 15, 0.7);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+            transition: opacity 0.6s, visibility 0.6s;
+        }
+        .video-placeholder.hidden { opacity: 0; visibility: hidden; }
+        #video-player { width: 100%; height: 100%; border-radius: 12px; object-fit: contain; opacity: 0; transition: opacity 0.8s ease; }
+        #video-player.visible { opacity: 1; }
+        
+        .channel-item { display: flex; align-items: center; padding: 12px 16px; cursor: pointer; transition: all 0.3s ease; border-bottom: 1px solid rgba(255, 255, 255, 0.05); border-left: 4px solid transparent; }
+        .channel-item:hover { background: rgba(212, 175, 55, 0.15); }
+        .channel-item.active { background: linear-gradient(90deg, rgba(212, 175, 55, 0.2) 0%, rgba(0,0,0,0) 100%); border-left: 4px solid #d4af37; }
+        .channel-logo { width: 32px; height: 32px; border-radius: 50%; object-fit: contain; background: #fff; margin-right: 12px; border: 2px solid rgba(212, 175, 55, 0.4); }
+        .channel-item.active .channel-logo { border-color: #d4af37; box-shadow: 0 0 10px rgba(212, 175, 55, 0.4); }
+
+        .logo-loader {
+            border: 4px solid #334155;
+            border-top: 4px solid #3b82f6;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+
+        @media (max-width: 640px) { body { font-size: 14px; } footer { padding: 1rem; font-size: 0.75rem; } }
     </style>
 </head>
 <body class="flex flex-col h-screen">
 
-    <!-- Mobile Header -->
-    <div class="md:hidden fixed top-0 w-full glass-panel z-50 p-4 flex justify-between items-center">
-        <span class="text-xl font-bold tracking-tighter text-indigo-400">DEVTRIX</span>
-        <button id="menu-btn" class="flex flex-col gap-1.5 focus:outline-none p-2">
-            <div class="w-6 h-0.5 bg-white transition-all line-1"></div>
-            <div class="w-6 h-0.5 bg-white transition-all line-2"></div>
-            <div class="w-6 h-0.5 bg-white transition-all line-3"></div>
-        </button>
+    <div id="auth-container" class="hidden auth-container">
+        <div id="login-page" class="auth-form">
+            <div class="text-center mb-12">
+                <h1 class="text-4xl font-black tracking-tighter mb-2">DEVTRIX <span class="text-indigo-400">LOGIN</span></h1>
+                <p class="text-slate-400 text-sm">Access your utility hub</p>
+            </div>
+
+            <form id="loginForm" class="glass-panel p-8 rounded-2xl space-y-6">
+                <div>
+                    <label class="block text-sm font-bold mb-2 text-slate-300">Email Address</label>
+                    <input type="email" id="loginEmail" placeholder="you@example.com" class="input-field" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-bold mb-2 text-slate-300">Password</label>
+                    <input type="password" id="loginPassword" placeholder="••••••••" class="input-field" required>
+                </div>
+                <button type="submit" class="w-full gradient-btn py-3 rounded-xl font-bold text-white transition hover:opacity-90">
+                    Sign In
+                </button>
+                <div id="loginError" class="error-message text-center hidden"></div>
+                <div id="loginSuccess" class="success-message text-center hidden"></div>
+            </form>
+
+            <div class="text-center mt-8">
+                <p class="text-slate-400">Don't have an account? <button type="button" onclick="switchAuth('signup')" class="text-indigo-400 hover:text-indigo-300 font-bold">Sign Up</button></p>
+            </div>
+        </div>
+
+        <div id="signup-page" class="auth-form hidden">
+            <div class="text-center mb-12">
+                <h1 class="text-4xl font-black tracking-tighter mb-2">JOIN <span class="text-indigo-400">DEVTRIX</span></h1>
+                <p class="text-slate-400 text-sm">Create your account</p>
+            </div>
+
+            <form id="signupForm" class="glass-panel p-8 rounded-2xl space-y-6">
+                <div>
+                    <label class="block text-sm font-bold mb-2 text-slate-300">Full Name</label>
+                    <input type="text" id="signupName" placeholder="Your name" class="input-field" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-bold mb-2 text-slate-300">Email Address</label>
+                    <input type="email" id="signupEmail" placeholder="you@example.com" class="input-field" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-bold mb-2 text-slate-300">Password</label>
+                    <input type="password" id="signupPassword" placeholder="Minimum 8 characters" class="input-field" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-bold mb-2 text-slate-300">Confirm Password</label>
+                    <input type="password" id="signupConfirm" placeholder="Repeat password" class="input-field" required>
+                </div>
+
+                <button type="submit" class="w-full gradient-btn py-3 rounded-xl font-bold text-white transition hover:opacity-90">
+                    Create Account
+                </button>
+
+                <div id="signupError" class="error-message text-center hidden"></div>
+                <div id="signupSuccess" class="success-message text-center hidden"></div>
+            </form>
+
+            <div class="text-center mt-8">
+                <p class="text-slate-400">Already have an account? <button type="button" onclick="switchAuth('login')" class="text-indigo-400 hover:text-indigo-300 font-bold">Sign In</button></p>
+            </div>
+        </div>
     </div>
 
-    <div id="sidebar-overlay" class="fixed inset-0 bg-black/50 hidden z-40"></div>
-
-    <!-- Sidebar -->
-    <aside id="sidebar" class="fixed md:relative w-72 h-full glass-panel flex flex-col p-6 shadow-2xl">
-        <div class="mb-12 hidden md:block">
-            <h1 class="text-2xl font-extrabold tracking-tighter italic">DEVTRIX <span class="text-indigo-500">v3</span></h1>
-            <p class="text-[10px] text-slate-500 uppercase tracking-widest mt-1">Made with ❤️ by Exton</p>
+    <div id="app-container" class="hidden flex flex-col h-full">
+        <div class="md:hidden fixed top-0 w-full glass-panel z-50 p-4 flex justify-between items-center">
+            <span class="text-xl font-bold tracking-tighter text-indigo-400">DEVTRIX</span>
+            <button id="menu-btn" class="flex flex-col gap-1.5 focus:outline-none p-2">
+                <div class="w-6 h-0.5 bg-white transition-all line-1"></div>
+                <div class="w-6 h-0.5 bg-white transition-all line-2"></div>
+                <div class="w-6 h-0.5 bg-white transition-all line-3"></div>
+            </button>
         </div>
 
-        <nav class="flex-1 space-y-1 overflow-y-auto">
-            <button onclick="navTo('home')" class="nav-item w-full flex items-center p-3 rounded-xl hover:bg-white/5 transition group">
-                <i class="fa fa-th-large w-10 text-indigo-400"></i> Dashboard
-            </button>
-            <button onclick="navTo('ai-chat')" class="nav-item w-full flex items-center p-3 rounded-xl hover:bg-white/5 transition group">
-                <i class="fa fa-robot w-10 text-amber-500"></i> Devtrix AI
-            </button>
-            <button onclick="navTo('music')" class="nav-item w-full flex items-center p-3 rounded-xl hover:bg-white/5 transition group">
-                <i class="fa fa-compact-disc w-10 text-pink-400"></i> Music Lab
-            </button>
-            <button onclick="navTo('football')" class="nav-item w-full flex items-center p-3 rounded-xl hover:bg-white/5 transition group">
-                <i class="fa fa-trophy w-10 text-emerald-400"></i> Live Arena
-            </button>
-            <button onclick="navTo('apk')" class="nav-item w-full flex items-center p-3 rounded-xl hover:bg-white/5 transition group">
-                <i class="fa fa-download w-10 text-blue-400"></i> APK Forge
-            </button>
-            <button onclick="navTo('fonts')" class="nav-item w-full flex items-center p-3 rounded-xl hover:bg-white/5 transition group">
-                <i class="fa fa-font w-10 text-amber-400"></i> Font Stylist
-            </button>
-            <button onclick="navTo('quotes')" class="nav-item w-full flex items-center p-3 rounded-xl hover:bg-white/5 transition group">
-                <i class="fa fa-quote-left w-10 text-purple-400"></i> Anime Zen
-            </button>
-        </nav>
+        <div id="sidebar-overlay" class="fixed inset-0 bg-black/50 hidden z-40"></div>
 
-        <div class="mt-auto pt-6 border-t border-white/5">
-            <div class="flex items-center gap-3 p-2 bg-white/5 rounded-2xl">
-                <div class="w-10 h-10 rounded-xl gradient-btn flex items-center justify-center font-bold">E</div>
-                <div>
-                    <p class="text-xs font-bold">Exton</p>
-                    <p class="text-[10px] text-slate-400">Zimbabwe 🇿🇼</p>
-                </div>
+        <aside id="sidebar" class="fixed md:relative w-72 h-full glass-panel flex flex-col p-6 shadow-2xl">
+            <div class="mb-12 hidden md:block">
+                <h1 class="text-2xl font-extrabold tracking-tighter italic">DEVTRIX <span class="text-indigo-500">v3</span></h1>
+                <p class="text-[10px] text-slate-500 uppercase tracking-widest mt-1">Made with ❤️ by Exton</p>
             </div>
-            <!-- Contact Links Footer -->
-            <div class="mt-4 pt-4 border-t border-white/5 text-[10px] text-slate-500 space-y-1">
-                <p>📧 <a href="mailto:Muyambiexton@gmail.com" class="text-indigo-400 hover:text-indigo-300">Muyambiexton@gmail.com</a></p>
-                <p>📱 <a href="tel:+263777237953" class="text-indigo-400 hover:text-indigo-300">+263 77 723 7953</a></p>
-                <p class="text-slate-600 mt-2">© 2026 Devtrix. All rights reserved.</p>
-            </div>
-        </div>
-    </aside>
 
-    <main class="flex-1 flex flex-col pt-20 md:pt-8 px-4 md:px-12 pb-20 md:pb-12 overflow-hidden">
-        
-        <!-- Dashboard / Home -->
-        <section id="home" class="page-content overflow-y-auto h-full pr-2">
-            <div class="max-w-5xl">
-                <div class="p-12 rounded-[2rem] bg-indigo-600/10 border border-indigo-500/20 mb-12">
-                    <h2 class="text-5xl font-black mb-4">The Next Gen <br><span class="text-indigo-400 text-3xl md:text-5xl">Utility Hub.</span></h2>
-                    <p class="text-slate-400 max-w-lg mb-8">All-in-one platform for developers, music lovers, sports enthusiasts, and tech creators. Made with love from Zimbabwe.</p>
-                    <div class="flex gap-4 flex-wrap">
-                        <button onclick="navTo('ai-chat')" class="gradient-btn px-6 py-3 rounded-xl font-bold">Launch AI</button>
-                        <button onclick="navTo('football')" class="bg-white/5 border border-white/10 px-6 py-3 rounded-xl font-bold">Live Scores</button>
-                    </div>
-                </div>
-
-                <!-- Features Overview -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
-                    <div class="card-glow glass-panel p-6 rounded-2xl">
-                        <h3 class="text-lg font-bold text-amber-500 mb-2">🤖 Devtrix AI</h3>
-                        <p class="text-slate-400 text-sm">Intelligent conversational AI powered by advanced language models. Get instant answers to any question.</p>
-                    </div>
-                    <div class="card-glow glass-panel p-6 rounded-2xl">
-                        <h3 class="text-lg font-bold text-pink-500 mb-2">🎵 Music Lab</h3>
-                        <p class="text-slate-400 text-sm">Search millions of songs and download MP3s instantly from our music cluster.</p>
-                    </div>
-                    <div class="card-glow glass-panel p-6 rounded-2xl">
-                        <h3 class="text-lg font-bold text-emerald-500 mb-2">⚽ Live Arena</h3>
-                        <p class="text-slate-400 text-sm">Real-time football match scores and statistics from leagues worldwide. Stay updated instantly.</p>
-                    </div>
-                    <div class="card-glow glass-panel p-6 rounded-2xl">
-                        <h3 class="text-lg font-bold text-blue-500 mb-2">📦 APK Forge</h3>
-                        <p class="text-slate-400 text-sm">Download Android applications with complete metadata and developer information.</p>
-                    </div>
-                    <div class="card-glow glass-panel p-6 rounded-2xl">
-                        <h3 class="text-lg font-bold text-amber-500 mb-2">✨ Font Stylist</h3>
-                        <p class="text-slate-400 text-sm">Generate stunning text styles and typography variants. Perfect for creative projects.</p>
-                    </div>
-                    <div class="card-glow glass-panel p-6 rounded-2xl">
-                        <h3 class="text-lg font-bold text-purple-500 mb-2">📖 Anime Zen</h3>
-                        <p class="text-slate-400 text-sm">Discover inspiring anime quotes and wisdom from popular anime series and characters.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Devtrix AI Chat -->
-        <section id="ai-chat" class="page-content hidden flex flex-col h-full max-w-5xl w-full mx-auto">
-            <div class="flex justify-between items-center mb-6 shrink-0">
-                <div>
-                    <h2 class="text-3xl font-bold italic">Devtrix <span class="text-amber-500">AI</span></h2>
-                    <p class="text-xs text-slate-500 uppercase tracking-widest mt-1 flex items-center gap-2">
-                        <span class="w-2 h-2 inline-block bg-emerald-400 rounded-full animate-pulse shadow-[0_0_8px_#34d399]"></span> Intelligence Core Active
-                    </p>
-                </div>
-                <button onclick="clearChat()" title="Clear Chat" class="p-3 bg-white/5 rounded-xl border border-white/10 hover:bg-white/10 text-slate-400 hover:text-white transition">
-                    <i class="fa fa-trash"></i>
+            <nav class="flex-1 space-y-1 overflow-y-auto pr-2">
+                <button onclick="navTo('home')" class="nav-item w-full flex items-center p-3 rounded-xl hover:bg-white/5 transition group">
+                    <i class="fa fa-th-large w-10 text-indigo-400"></i> Dashboard
                 </button>
-            </div>
-
-            <div id="chatBox" class="flex-1 overflow-y-auto flex flex-col gap-6 mb-6 pr-4">
-                <div class="flex gap-4 ai-message max-w-[85%]">
-                    <div class="w-10 h-10 rounded-full border border-amber-500/30 bg-[#222] text-amber-500 flex items-center justify-center shrink-0">
-                        <i class="fa-solid fa-robot"></i>
-                    </div>
-                    <div class="bubble">Greetings. I am the Devtrix AI. How can I assist your development today?</div>
-                </div>
-            </div>
-
-            <div class="mt-auto relative shrink-0">
-                <input type="text" id="aiInput" placeholder="Ask anything..." autocomplete="off" class="w-full bg-[#1a1a1a] border border-white/10 p-4 pr-16 rounded-2xl focus:ring-2 ring-amber-500 outline-none text-white transition">
-                <button id="sendAiBtn" class="absolute right-2 top-2 bottom-2 bg-amber-500 text-black w-12 rounded-xl flex items-center justify-center hover:bg-amber-400 transition">
-                    <i class="fa-solid fa-paper-plane"></i>
+                <button onclick="navTo('profile')" class="nav-item w-full flex items-center p-3 rounded-xl hover:bg-white/5 transition group">
+                    <i class="fa fa-user-circle w-10 text-purple-400"></i> My Profile
                 </button>
-                <p class="text-center text-[10px] text-slate-500 mt-2 opacity-50">AI may provide inaccurate info. Verify important data.</p>
-            </div>
-        </section>
+                <button onclick="navTo('ai-chat')" class="nav-item w-full flex items-center p-3 rounded-xl hover:bg-white/5 transition group">
+                    <i class="fa fa-robot w-10 text-amber-500"></i> Devtrix AI
+                </button>
+                <button onclick="navTo('music')" class="nav-item w-full flex items-center p-3 rounded-xl hover:bg-white/5 transition group">
+                    <i class="fa fa-compact-disc w-10 text-pink-400"></i> Music Lab
+                </button>
+                <button onclick="navTo('football')" class="nav-item w-full flex items-center p-3 rounded-xl hover:bg-white/5 transition group">
+                    <i class="fa fa-trophy w-10 text-emerald-400"></i> Live Arena
+                </button>
+                <button onclick="navTo('news')" class="nav-item w-full flex items-center p-3 rounded-xl hover:bg-white/5 transition group">
+                    <i class="fa fa-tv w-10 text-yellow-500"></i> Live TV
+                </button>
+                <button onclick="navTo('apk')" class="nav-item w-full flex items-center p-3 rounded-xl hover:bg-white/5 transition group">
+                    <i class="fa fa-download w-10 text-blue-400"></i> APK Forge
+                </button>
+                <button onclick="navTo('fonts')" class="nav-item w-full flex items-center p-3 rounded-xl hover:bg-white/5 transition group">
+                    <i class="fa fa-font w-10 text-amber-400"></i> Font Stylist
+                </button>
+                <button onclick="navTo('logo-designer')" class="nav-item w-full flex items-center p-3 rounded-xl hover:bg-white/5 transition group">
+                    <i class="fa fa-wand-magic-sparkles w-10 text-blue-500"></i> Logo Designer
+                </button>
+                <button onclick="navTo('quotes')" class="nav-item w-full flex items-center p-3 rounded-xl hover:bg-white/5 transition group">
+                    <i class="fa fa-quote-left w-10 text-purple-400"></i> Anime Zen
+                </button>
 
-        <!-- Music Lab -->
-        <section id="music" class="page-content hidden overflow-y-auto h-full pr-2">
-            <div class="max-w-4xl">
-                <h2 class="text-3xl font-bold mb-8 italic">Music <span class="text-pink-500">Lab</span></h2>
-                <div class="flex flex-col md:flex-row gap-4 mb-8">
-                    <input id="musicIn" type="text" placeholder="Search track or artist..." class="flex-1 bg-slate-900 border border-white/10 p-4 rounded-2xl focus:ring-2 ring-indigo-500 outline-none">
-                    <button onclick="searchMusic()" class="gradient-btn px-10 py-4 rounded-2xl font-bold">Search</button>
-                </div>
-                <div id="musicOut" class="space-y-6">
-                    <p class="text-center text-slate-500 py-20">Enter a song name to pull cloud data.</p>
-                </div>
-            </div>
-        </section>
+                <button id="nav-admin" onclick="navTo('admin')" class="nav-item w-full hidden items-center p-3 rounded-xl hover:bg-white/5 transition group mt-4 border border-red-500/30">
+                    <i class="fa fa-shield-halved w-10 text-red-500"></i> Admin Panel
+                </button>
+            </nav>
 
-        <!-- Football Live Arena -->
-        <section id="football" class="page-content hidden overflow-y-auto h-full pr-2">
-            <div class="max-w-6xl">
-                <div class="flex justify-between items-end mb-8">
+            <div class="mt-auto pt-6 border-t border-white/5">
+                <div id="user-card" class="flex items-center gap-3 p-2 bg-white/5 rounded-2xl mb-4">
+                    <div id="user-avatar" class="w-10 h-10 rounded-xl gradient-btn flex items-center justify-center font-bold text-white">E</div>
                     <div>
-                        <h2 class="text-3xl font-bold italic">Live <span class="text-emerald-500">Arena</span></h2>
-                        <p id="match-count" class="text-xs text-slate-500 uppercase tracking-widest mt-1">Detecting fixtures...</p>
+                        <p id="user-name" class="text-xs font-bold">Loading...</p>
+                        <p class="text-[10px] text-slate-400">User</p>
                     </div>
-                    <button onclick="fetchScores()" class="p-3 bg-white/5 rounded-xl border border-white/10 hover:bg-white/10">
-                        <i id="refresh-icon" class="fa fa-sync-alt"></i>
+                </div>
+                <button onclick="logout()" class="w-full text-left text-sm text-slate-400 hover:text-red-400 transition font-bold py-2">
+                    <i class="fa fa-sign-out mr-2"></i> Logout
+                </button>
+            </div>
+        </aside>
+
+        <main class="flex-1 flex flex-col pt-20 md:pt-8 px-4 md:px-12 pb-20 md:pb-12 overflow-hidden">
+            
+            <section id="home" class="page-content overflow-y-auto h-full pr-2">
+                <div class="max-w-5xl">
+                    <div class="p-12 rounded-[2rem] bg-indigo-600/10 border border-indigo-500/20 mb-12">
+                        <h2 class="text-5xl font-black mb-4">The Next Gen <br><span class="text-indigo-400 text-3xl md:text-5xl">Utility Hub.</span></h2>
+                        <p class="text-slate-400 max-w-lg mb-8">All-in-one platform for developers, music lovers, sports enthusiasts, and tech creators. Made with love from Zimbabwe.</p>
+                        <div class="flex gap-4 flex-wrap">
+                            <button onclick="navTo('ai-chat')" class="gradient-btn px-6 py-3 rounded-xl font-bold">Launch AI</button>
+                            <button onclick="navTo('football')" class="bg-white/5 border border-white/10 px-6 py-3 rounded-xl font-bold">Live Scores</button>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+                        <div class="card-glow glass-panel p-6 rounded-2xl cursor-pointer" onclick="navTo('ai-chat')">
+                            <h3 class="text-lg font-bold text-amber-500 mb-2">🤖 Devtrix AI</h3>
+                            <p class="text-slate-400 text-sm">Intelligent conversational AI powered by advanced language models.</p>
+                        </div>
+                        <div class="card-glow glass-panel p-6 rounded-2xl cursor-pointer" onclick="navTo('music')">
+                            <h3 class="text-lg font-bold text-pink-500 mb-2">🎵 Music Lab</h3>
+                            <p class="text-slate-400 text-sm">Search millions of songs and download MP3s instantly.</p>
+                        </div>
+                        <div class="card-glow glass-panel p-6 rounded-2xl cursor-pointer" onclick="navTo('football')">
+                            <h3 class="text-lg font-bold text-emerald-500 mb-2">⚽ Live Arena</h3>
+                            <p class="text-slate-400 text-sm">Real-time football match scores and statistics worldwide.</p>
+                        </div>
+                        <div class="card-glow glass-panel p-6 rounded-2xl cursor-pointer" onclick="navTo('news')">
+                            <h3 class="text-lg font-bold text-yellow-500 mb-2">📺 Live TV</h3>
+                            <p class="text-slate-400 text-sm">Stream live news and global television channels via HLS.</p>
+                        </div>
+                        <div class="card-glow glass-panel p-6 rounded-2xl cursor-pointer" onclick="navTo('logo-designer')">
+                            <h3 class="text-lg font-bold text-blue-500 mb-2">✨ Logo Designer</h3>
+                            <p class="text-slate-400 text-sm">Generate stunning graphic text logos instantly via Ephoto360.</p>
+                        </div>
+                        <div class="card-glow glass-panel p-6 rounded-2xl cursor-pointer" onclick="navTo('apk')">
+                            <h3 class="text-lg font-bold text-blue-400 mb-2">📦 APK Forge</h3>
+                            <p class="text-slate-400 text-sm">Download Android applications with full metadata.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="profile" class="page-content hidden overflow-y-auto h-full pr-2">
+                <div class="max-w-2xl mx-auto">
+                    <h2 class="text-3xl font-bold mb-8 italic">My <span class="text-purple-500">Profile</span></h2>
+                    <div class="glass-panel p-8 rounded-2xl space-y-6">
+                        <div class="flex flex-col md:flex-row items-center gap-6 pb-6 border-b border-white/5">
+                            <div id="profile-avatar" class="w-24 h-24 rounded-xl gradient-btn flex items-center justify-center font-bold text-3xl text-white">E</div>
+                            <div>
+                                <h3 id="profile-name" class="text-2xl font-bold mb-2">Loading...</h3>
+                                <p id="profile-email" class="text-slate-400 mb-4">Loading...</p>
+                                <button onclick="navTo('edit-profile')" class="bg-indigo-500 hover:bg-indigo-600 px-4 py-2 rounded-lg font-bold text-sm transition">
+                                    <i class="fa fa-edit mr-2"></i> Edit Profile
+                                </button>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="text-sm font-bold text-slate-300 mb-2 block">Account Status</label>
+                            <p id="profile-status" class="text-emerald-400 font-bold flex items-center gap-2">
+                                <span class="w-2 h-2 bg-emerald-400 rounded-full"></span> Active
+                            </p>
+                        </div>
+                        <div>
+                            <label class="text-sm font-bold text-slate-300 mb-2 block">Member Since</label>
+                            <p id="profile-joined" class="text-slate-400">Loading...</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="edit-profile" class="page-content hidden overflow-y-auto h-full pr-2">
+                <div class="max-w-2xl mx-auto">
+                    <h2 class="text-3xl font-bold mb-8 italic">Edit <span class="text-purple-500">Profile</span></h2>
+                    <form id="editProfileForm" class="glass-panel p-8 rounded-2xl space-y-6">
+                        <div>
+                            <label class="block text-sm font-bold mb-2 text-slate-300">Full Name</label>
+                            <input type="text" id="editName" placeholder="Your name" class="input-field" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold mb-2 text-slate-300">New Password (Optional)</label>
+                            <input type="password" id="editPassword" placeholder="Leave blank to keep current password" class="input-field">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold mb-2 text-slate-300">Confirm New Password</label>
+                            <input type="password" id="editConfirm" placeholder="Repeat new password" class="input-field">
+                        </div>
+                        <button type="submit" class="w-full gradient-btn py-3 rounded-xl font-bold text-white transition hover:opacity-90">Save Changes</button>
+                        <div id="editErrorProfile" class="error-message text-center hidden"></div>
+                        <div id="editSuccessProfile" class="success-message text-center hidden"></div>
+                    </form>
+                </div>
+            </section>
+
+            <section id="ai-chat" class="page-content hidden flex flex-col h-full max-w-5xl w-full mx-auto">
+                <div class="flex justify-between items-center mb-6 shrink-0">
+                    <div>
+                        <h2 class="text-3xl font-bold italic">Devtrix <span class="text-amber-500">AI</span></h2>
+                        <p class="text-xs text-slate-500 uppercase tracking-widest mt-1 flex items-center gap-2">
+                            <span class="w-2 h-2 inline-block bg-emerald-400 rounded-full animate-pulse shadow-[0_0_8px_#34d399]"></span> Intelligence Core Active
+                        </p>
+                    </div>
+                    <button onclick="clearChat()" title="Clear Chat" class="p-3 bg-white/5 rounded-xl border border-white/10 hover:bg-white/10 text-slate-400 hover:text-white transition">
+                        <i class="fa fa-trash"></i>
                     </button>
                 </div>
-                <div id="matches-container" class="grid grid-cols-1 lg:grid-cols-2 gap-4"></div>
-            </div>
-        </section>
-
-        <!-- APK Forge -->
-        <section id="apk" class="page-content hidden overflow-y-auto h-full pr-2">
-            <div class="max-w-xl mx-auto">
-                <h2 class="text-3xl font-bold mb-8 italic">APK <span class="text-blue-500">Forge</span></h2>
-                <div class="flex gap-4 mb-8">
-                    <input id="apkIn" type="text" placeholder="App Name (e.g. WhatsApp)" class="flex-1 bg-slate-900 border border-white/10 p-4 rounded-2xl outline-none">
-                    <button onclick="fetchApk()" class="gradient-btn px-6 py-4 rounded-2xl font-bold">Search</button>
-                </div>
-                <div id="apkLoader" class="hidden text-center py-10 animate-pulse text-blue-400">Locating binary files...</div>
-                <div id="apkResult" class="hidden card-glow glass-panel p-8 rounded-3xl text-center">
-                    <img id="appIcon" src="" class="w-24 h-24 mx-auto rounded-2xl mb-4 border-2 border-blue-500/50">
-                    <h3 id="resAppName" class="text-xl font-bold"></h3>
-                    <p id="resDev" class="text-slate-500 text-sm mb-6"></p>
-                    <a id="downloadLink" href="#" class="gradient-btn inline-block px-10 py-3 rounded-full font-bold">Download APK</a>
-                </div>
-            </div>
-        </section>
-
-        <!-- Font Stylist -->
-        <section id="fonts" class="page-content hidden overflow-y-auto h-full pr-2">
-            <div class="max-w-2xl mx-auto">
-                <h2 class="text-3xl font-bold mb-8 italic">Font <span class="text-amber-500">Stylist</span></h2>
-                <div class="flex gap-4 mb-8">
-                    <input id="fontIn" type="text" placeholder="Type text to stylize..." class="flex-1 bg-slate-900 border border-white/10 p-4 rounded-2xl outline-none">
-                    <button onclick="generateFonts()" class="gradient-btn px-6 py-4 rounded-2xl font-bold">Stylize</button>
-                </div>
-                <div id="fontLoader" class="hidden text-center py-4 text-amber-500">Polishing variants...</div>
-                <div id="fontResults" class="space-y-3"></div>
-            </div>
-        </section>
-
-        <!-- Anime Quotes -->
-        <section id="quotes" class="page-content hidden overflow-y-auto h-full pr-2">
-            <div class="max-w-lg mx-auto py-10">
-                <div class="card-glow glass-panel p-10 rounded-[2.5rem] text-center">
-                    <div class="text-4xl text-purple-500 mb-6 opacity-50">"</div>
-                    <div id="quoteContent" class="fade-in">
-                        <p id="quoteText" class="text-xl italic mb-6 leading-relaxed">Click below for anime wisdom...</p>
-                        <h4 id="quoteAuthor" class="text-purple-400 font-bold uppercase tracking-widest"></h4>
-                        <p id="quoteAnime" class="text-xs text-slate-500 mt-1"></p>
+                <div id="chatBox" class="flex-1 overflow-y-auto flex flex-col gap-6 mb-6 pr-4">
+                    <div class="flex gap-4 ai-message max-w-[85%]">
+                        <div class="w-10 h-10 rounded-full border border-amber-500/30 bg-[#222] text-amber-500 flex items-center justify-center shrink-0">
+                            <i class="fa-solid fa-robot"></i>
+                        </div>
+                        <div class="bubble">Greetings. I am the Devtrix AI. How can I assist your development today?</div>
                     </div>
-                    <button onclick="getAnimeQuote()" class="gradient-btn mt-10 px-10 py-3 rounded-full font-bold">New Quote</button>
+                </div>
+                <div class="mt-auto relative shrink-0">
+                    <input type="text" id="aiInput" placeholder="Ask anything..." autocomplete="off" class="w-full bg-[#1a1a1a] border border-white/10 p-4 pr-16 rounded-2xl focus:ring-2 ring-amber-500 outline-none text-white transition">
+                    <button id="sendAiBtn" class="absolute right-2 top-2 bottom-2 bg-amber-500 text-black w-12 rounded-xl flex items-center justify-center hover:bg-amber-400 transition">
+                        <i class="fa-solid fa-paper-plane"></i>
+                    </button>
+                </div>
+            </section>
+
+            <section id="music" class="page-content hidden overflow-y-auto h-full pr-2">
+                <div class="max-w-4xl">
+                    <h2 class="text-3xl font-bold mb-8 italic">Music <span class="text-pink-500">Lab</span></h2>
+                    <div class="flex flex-col md:flex-row gap-4 mb-8">
+                        <input id="musicIn" type="text" placeholder="Search track or artist..." class="flex-1 bg-slate-900 border border-white/10 p-4 rounded-2xl focus:ring-2 ring-indigo-500 outline-none">
+                        <button onclick="searchMusic()" class="gradient-btn px-10 py-4 rounded-2xl font-bold">Search</button>
+                    </div>
+                    <div id="musicOut" class="space-y-6"><p class="text-center text-slate-500 py-20">Enter a song name to pull cloud data.</p></div>
+                </div>
+            </section>
+
+            <section id="football" class="page-content hidden overflow-y-auto h-full pr-2">
+                <div class="max-w-6xl">
+                    <div class="flex justify-between items-end mb-8">
+                        <div>
+                            <h2 class="text-3xl font-bold italic">Live <span class="text-emerald-500">Arena</span></h2>
+                            <p id="match-count" class="text-xs text-slate-500 uppercase tracking-widest mt-1">Detecting fixtures...</p>
+                        </div>
+                        <button onclick="fetchScores()" class="p-3 bg-white/5 rounded-xl border border-white/10 hover:bg-white/10">
+                            <i id="refresh-icon" class="fa fa-sync-alt"></i>
+                        </button>
+                    </div>
+                    <div id="matches-container" class="grid grid-cols-1 lg:grid-cols-2 gap-4"></div>
+                </div>
+            </section>
+
+            <section id="news" class="page-content hidden h-full flex flex-col gap-4 pr-2">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 shrink-0">
+                    <div>
+                        <h2 class="text-3xl font-bold mb-1 italic">Live <span class="text-yellow-500">TV</span></h2>
+                        <p class="text-xs text-slate-500 uppercase tracking-widest">Exton News & Broadcasting Streamer</p>
+                    </div>
+                    <div class="relative w-full md:w-80 z-20">
+                        <button id="channel-dropdown-btn" onclick="toggleChannelDropdown()" class="w-full glass-panel p-4 rounded-xl flex justify-between items-center border border-yellow-500/30 hover:border-yellow-500/60 transition text-sm font-bold text-yellow-500 tracking-widest">
+                            <span id="dropdown-selected-text" class="truncate pr-4">Select Channel</span>
+                            <i class="fa-solid fa-chevron-down transition-transform duration-300" id="dropdown-icon"></i>
+                        </button>
+                        <div id="channel-dropdown-list" class="hidden absolute top-full left-0 right-0 mt-2 glass-panel border border-yellow-500/20 rounded-xl shadow-2xl overflow-hidden flex flex-col max-h-[60vh]">
+                            <div class="p-3 bg-black/60 text-xs text-yellow-500/70 uppercase tracking-widest border-b border-white/5 font-bold">
+                                Available Channels
+                            </div>
+                            <div id="channel-list" class="overflow-y-auto flex-1 p-2 bg-[#020617]/95">
+                                </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex-1 flex flex-col w-full relative pb-4">
+                    <div class="video-wrapper flex-1 w-full rounded-2xl overflow-hidden border border-white/10 shadow-2xl bg-black relative">
+                        <div id="video-placeholder" class="absolute inset-0 bg-black/60 backdrop-blur-md flex flex-col justify-center items-center z-10 transition-all duration-500">
+                            <i class="fa-solid fa-satellite-dish text-4xl md:text-6xl text-yellow-500/50 mb-4 animate-pulse"></i>
+                            <h2 class="text-yellow-500 text-2xl md:text-4xl font-black tracking-widest mb-3 text-center">AWAITING SIGNAL</h2>
+                            <p class="text-slate-300 text-sm md:text-base text-center px-4">Select a channel from the drop-down menu above</p>
+                        </div>
+                        <video id="video-player" controls class="absolute inset-0 w-full h-full object-contain opacity-0 transition-opacity duration-700"></video>
+                    </div>
+                    <div class="mt-4 text-yellow-500 font-bold text-lg md:text-xl flex items-center gap-3" id="now-playing">
+                        <span class="w-3 h-3 rounded-full bg-slate-600 inline-block" id="status-indicator"></span> 
+                        <span>Awaiting Selection...</span>
+                    </div>
+                </div>
+            </section>
+
+            <section id="apk" class="page-content hidden overflow-y-auto h-full pr-2">
+                <div class="max-w-xl mx-auto">
+                    <h2 class="text-3xl font-bold mb-8 italic">APK <span class="text-blue-500">Forge</span></h2>
+                    <div class="flex gap-4 mb-8">
+                        <input id="apkIn" type="text" placeholder="App Name (e.g. WhatsApp)" class="flex-1 bg-slate-900 border border-white/10 p-4 rounded-2xl outline-none">
+                        <button onclick="fetchApk()" class="gradient-btn px-6 py-4 rounded-2xl font-bold">Search</button>
+                    </div>
+                    <div id="apkLoader" class="hidden text-center py-10 animate-pulse text-blue-400">Locating binary files...</div>
+                    <div id="apkResult" class="hidden card-glow glass-panel p-8 rounded-3xl text-center">
+                        <img id="appIcon" src="" class="w-24 h-24 mx-auto rounded-2xl mb-4 border-2 border-blue-500/50">
+                        <h3 id="resAppName" class="text-xl font-bold"></h3>
+                        <p id="resDev" class="text-slate-500 text-sm mb-6"></p>
+                        <a id="downloadLink" href="#" class="gradient-btn inline-block px-10 py-3 rounded-full font-bold">Download APK</a>
+                    </div>
+                </div>
+            </section>
+
+            <section id="logo-designer" class="page-content hidden overflow-y-auto h-full pr-2">
+                <div class="max-w-6xl mx-auto">
+                    <div class="text-center md:text-left mb-8">
+                        <h2 class="text-3xl font-bold italic">Logo <span class="text-blue-500">Designer</span></h2>
+                        <p class="text-slate-400 text-sm mt-2">Generate stunning graphic text logos instantly.</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <div class="glass-panel p-8 rounded-2xl shadow-2xl flex flex-col gap-6">
+                            <div>
+                                <label for="logoText" class="block text-sm font-bold text-slate-300 mb-2">Your Logo Text</label>
+                                <input type="text" id="logoText" placeholder="e.g. Prince Tech" class="w-full px-4 py-3 bg-slate-900 border border-slate-600 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-white transition-colors">
+                            </div>
+                            <div>
+                                <label for="logoStyle" class="block text-sm font-bold text-slate-300 mb-2">Select Style</label>
+                                <select id="logoStyle" class="w-full px-4 py-3 bg-slate-900 border border-slate-600 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-white transition-colors">
+                                    <option value="galaxy">Galaxy Space</option>
+                                    <option value="sandsummer">Sand Summer</option>
+                                    <option value="gradienttext">Gradient Text</option>
+                                    <option value="effectclouds">Effect Clouds</option>
+                                    <option value="cartoonstyle">Cartoon Style</option>
+                                    <option value="logomaker">Standard Logo Maker</option>
+                                    <option value="neonglitch">Neon Glitch</option>
+                                    <option value="pixelglitch">Pixel Glitch</option>
+                                    <option value="typographytext">Typography Text</option>
+                                    <option value="advancedglow">Advanced Glow</option>
+                                    <option value="blackpinklogo">Blackpink Style</option>
+                                    <option value="glossysilver">Glossy Silver</option>
+                                </select>
+                            </div>
+                            <button onclick="generateLogo()" class="w-full py-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-bold rounded-xl shadow-lg transition-all flex justify-center items-center gap-2">
+                                <i class="fa-solid fa-image"></i> Generate Logo
+                            </button>
+                        </div>
+                        <div class="glass-panel p-8 rounded-2xl shadow-2xl flex flex-col justify-center items-center min-h-[400px] text-center border-dashed border-2 border-slate-600 relative">
+                            <div id="placeholderText" class="text-slate-500 flex flex-col items-center gap-4">
+                                <i class="fa-regular fa-images text-6xl opacity-50"></i>
+                                <p>Your generated logo will appear here.</p>
+                            </div>
+                            <div id="logo-loading" class="hidden flex-col items-center gap-4">
+                                <div class="logo-loader"></div>
+                                <p class="text-blue-400 font-medium animate-pulse">Designing your masterpiece...</p>
+                            </div>
+                            <div id="resultContainer" class="hidden w-full flex flex-col items-center gap-6">
+                                <img id="logoImage" src="" alt="Generated Logo" class="max-w-full max-h-[400px] rounded-lg shadow-xl object-contain border border-white/10">
+                                <a id="downloadBtn" href="#" target="_blank" download="Devtrix_Logo.png" class="px-8 py-3 bg-slate-700 hover:bg-slate-600 text-white rounded-xl font-bold transition-colors flex items-center gap-2 shadow-md">
+                                    <i class="fa-solid fa-download"></i> Download Image
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="fonts" class="page-content hidden overflow-y-auto h-full pr-2">
+                <div class="max-w-2xl mx-auto">
+                    <h2 class="text-3xl font-bold mb-8 italic">Font <span class="text-amber-500">Stylist</span></h2>
+                    <div class="flex gap-4 mb-8">
+                        <input id="fontIn" type="text" placeholder="Type text to stylize..." class="flex-1 bg-slate-900 border border-white/10 p-4 rounded-2xl outline-none">
+                        <button onclick="generateFonts()" class="gradient-btn px-6 py-4 rounded-2xl font-bold">Stylize</button>
+                    </div>
+                    <div id="fontResults" class="space-y-3"></div>
+                </div>
+            </section>
+
+            <section id="quotes" class="page-content hidden overflow-y-auto h-full pr-2">
+                <div class="max-w-lg mx-auto py-10">
+                    <div class="card-glow glass-panel p-10 rounded-[2.5rem] text-center">
+                        <div class="text-4xl text-purple-500 mb-6 opacity-50">"</div>
+                        <div id="quoteContent" class="fade-in">
+                            <p id="quoteText" class="text-xl italic mb-6 leading-relaxed">Click below for anime wisdom...</p>
+                            <h4 id="quoteAuthor" class="text-purple-400 font-bold uppercase tracking-widest"></h4>
+                            <p id="quoteAnime" class="text-xs text-slate-500 mt-1"></p>
+                        </div>
+                        <button onclick="getAnimeQuote()" class="gradient-btn mt-10 px-10 py-3 rounded-full font-bold">New Quote</button>
+                    </div>
+                </div>
+            </section>
+
+            <section id="admin" class="page-content hidden overflow-y-auto h-full pr-2">
+                <div class="max-w-4xl mx-auto">
+                    <h2 class="text-3xl font-bold mb-8 italic">Admin <span class="text-red-500">Dashboard</span></h2>
+                    
+                    <div class="glass-panel p-8 rounded-2xl">
+                        <h3 class="text-xl font-bold mb-6 flex items-center gap-3">
+                            <i class="fa fa-users text-red-500"></i> Registered Users
+                        </h3>
+                        
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse">
+                                <thead>
+                                    <tr class="border-b border-white/10 text-slate-400 text-sm">
+                                        <th class="p-4 font-semibold uppercase tracking-wider">User Details</th>
+                                        <th class="p-4 font-semibold uppercase tracking-wider">Email</th>
+                                        <th class="p-4 font-semibold uppercase tracking-wider">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="admin-users-list">
+                                    <tr>
+                                        <td colspan="3" class="p-8 text-center text-slate-500 animate-pulse">
+                                            Syncing with Supabase profiles table...
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+
+        <footer class="w-full">
+            <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+                <div class="text-center md:text-left">
+                    <p class="text-slate-400">Made with ❤️ by <span class="text-indigo-400 font-bold">Exton</span> • Proudly <span class="text-yellow-400 font-bold">Zimbabwean 🇿🇼</span></p>
+                </div>
+                <div class="flex gap-6 text-sm">
+                    <a href="mailto:Muyambiexton@gmail.com" class="text-slate-400 hover:text-indigo-400 transition">📧 Email</a>
+                    <span class="text-slate-600">© 2026 Devtrix</span>
                 </div>
             </div>
-        </section>
-
-    </main>
-
-    <!-- Footer -->
-    <footer class="w-full">
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
-            <div class="text-center md:text-left">
-                <p class="text-slate-400">Made with ❤️ by <span class="text-indigo-400 font-bold">Exton</span> • Proudly <span class="text-yellow-400 font-bold">Zimbabwean 🇿🇼</span></p>
-            </div>
-            <div class="flex gap-6 text-sm">
-                <a href="mailto:Muyambiexton@gmail.com" class="text-slate-400 hover:text-indigo-400 transition">📧 Email</a>
-                <a href="tel:+263777237953" class="text-slate-400 hover:text-indigo-400 transition">📱 Call</a>
-                <span class="text-slate-600">© 2026 Devtrix</span>
-            </div>
-        </div>
-    </footer>
+        </footer>
+    </div>
 
     <script>
-        // API CONFIG
-        const PRINCE_KEY = "prince";
-        const PRINCE_BASE = "https://api.princetechn.com/api";
-        const CYRIL_BASE = "https://apis.davidcyril.name.ng";
+        // ========== SUPABASE CONFIGURATION ==========
+        const SUPABASE_URL = "https://qejkmfeqdcsfcukojriz.supabase.co";
+        const SUPABASE_KEY = "sb_publishable_uWRUNQ4Zo5AvOP9TlZxWvA_gskofDV-";
+        const { createClient } = supabase;
+        const supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        // UI & NAVIGATION LOGIC
+        // ========== API CONFIG & CONSTANTS ==========
+        const PRINCE_KEY = "prince"; 
+        const PRINCE_BASE = "https://api.princetechn.com/api";
+        const ADMIN_EMAIL = "muyambiexton@gmail.com"; 
+
+        // ========== AUTH STATE MANAGEMENT ==========
+        let currentUser = null;
+
+        async function checkAuthStatus() {
+            const { data: { user }, error } = await supabaseClient.auth.getUser();
+            if (user) {
+                currentUser = user;
+                showApp();
+                loadUserProfile(); 
+                fetchChannels();   
+            } else {
+                showAuth();
+            }
+        }
+
+        function showAuth() { 
+            document.getElementById('auth-container').classList.remove('hidden'); 
+            document.getElementById('app-container').classList.add('hidden'); 
+        }
+        function showApp() { 
+            document.getElementById('auth-container').classList.add('hidden'); 
+            document.getElementById('app-container').classList.remove('hidden'); 
+        }
+        function switchAuth(page) {
+            document.getElementById('login-page').classList.toggle('hidden', page !== 'login');
+            document.getElementById('signup-page').classList.toggle('hidden', page !== 'signup');
+        }
+
+        // ========== AUTH FORMS ==========
+        document.getElementById("loginForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const email = document.getElementById("loginEmail").value.trim();
+            const password = document.getElementById("loginPassword").value;
+            const loginError = document.getElementById("loginError");
+            const loginSuccess = document.getElementById("loginSuccess");
+            
+            loginError.classList.add("hidden");
+            loginSuccess.classList.add("hidden");
+            
+            const { data, error } = await supabaseClient.auth.signInWithPassword({
+                email,
+                password,
+            });
+            
+            if (error) {
+                loginError.textContent = error.message;
+                loginError.classList.remove("hidden");
+                return;
+            }
+            
+            currentUser = data.user;
+            loginSuccess.textContent = "Signed in successfully!";
+            loginSuccess.classList.remove("hidden");
+            
+            setTimeout(() => {
+                showApp();
+                loadUserProfile(); 
+                fetchChannels();
+            }, 800);
+        });
+
+        document.getElementById("signupForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const fullName = document.getElementById("signupName").value.trim();
+            const email = document.getElementById("signupEmail").value.trim();
+            const password = document.getElementById("signupPassword").value;
+            const confirmPassword = document.getElementById("signupConfirm").value;
+            const signupError = document.getElementById("signupError");
+            const signupSuccess = document.getElementById("signupSuccess");
+            
+            signupError.classList.add("hidden");
+            signupSuccess.classList.add("hidden");
+            
+            if (password.length < 8) {
+                signupError.textContent = "Password must be at least 8 characters.";
+                signupError.classList.remove("hidden");
+                return;
+            }
+            if (password !== confirmPassword) {
+                signupError.textContent = "Passwords do not match.";
+                signupError.classList.remove("hidden");
+                return;
+            }
+            
+            const { data, error } = await supabaseClient.auth.signUp({
+                email,
+                password,
+                options: {
+                    data: { full_name: fullName }, 
+                },
+            });
+            
+            if (error) {
+                signupError.textContent = error.message;
+                signupError.classList.remove("hidden");
+                return;
+            }
+            
+            // Push to custom profiles table for Admin visibility
+            if (data.user) {
+                await supabaseClient.from('profiles').insert([{ 
+                    id: data.user.id, 
+                    full_name: fullName,
+                    email: email 
+                }]);
+            }
+            
+            signupSuccess.textContent = "Account created! Check your email to confirm.";
+            signupSuccess.classList.remove("hidden");
+            
+            setTimeout(() => switchAuth('login'), 2500);
+        });
+
+        async function logout() {
+            await supabaseClient.auth.signOut();
+            currentUser = null;
+            showAuth();
+            
+            document.getElementById('loginForm').reset();
+            document.getElementById('signupForm').reset();
+            document.getElementById('nav-admin').classList.add('hidden');
+            document.getElementById('nav-admin').classList.remove('flex');
+        }
+
+        // ========== USER PROFILE & ADMIN LOGIC ==========
+        async function loadUserProfile() {
+            if (!currentUser) return;
+            const name = currentUser.user_metadata?.full_name || 'User';
+            const firstLetter = name.charAt(0).toUpperCase();
+            const email = currentUser.email;
+            const joinedDate = new Date(currentUser.created_at).toLocaleDateString();
+
+            document.getElementById('user-name').textContent = name;
+            document.getElementById('user-avatar').textContent = firstLetter;
+            document.getElementById('profile-name').textContent = name;
+            document.getElementById('profile-email').textContent = email;
+            document.getElementById('profile-avatar').textContent = firstLetter;
+            document.getElementById('profile-joined').textContent = `Member since ${joinedDate}`;
+            document.getElementById('editName').value = name;
+
+            // Check Admin Rights
+            if (email.toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
+                document.getElementById('nav-admin').classList.remove('hidden');
+                document.getElementById('nav-admin').classList.add('flex');
+                document.getElementById('profile-status').innerHTML = `<span class="w-2 h-2 bg-red-500 rounded-full shadow-[0_0_8px_#ef4444]"></span> Admin Access`;
+            }
+        }
+
+        async function loadAdminData() {
+            const list = document.getElementById('admin-users-list');
+            list.innerHTML = '<tr><td colspan="3" class="p-8 text-center text-slate-500 animate-pulse">Syncing with database...</td></tr>';
+            
+            try {
+                // Queries the custom 'profiles' table populated during signup
+                const { data, error } = await supabaseClient.from('profiles').select('*');
+                
+                if (error) throw error;
+
+                if (data && data.length > 0) {
+                    list.innerHTML = data.map(u => `
+                        <tr class="border-b border-white/5 hover:bg-white/5 transition">
+                            <td class="p-4">
+                                <div class="font-bold text-white">${u.full_name || 'Unknown User'}</div>
+                                <div class="text-[10px] text-slate-500 font-mono mt-1">${u.id}</div>
+                            </td>
+                            <td class="p-4 text-sm text-slate-300">${u.email || 'No email stored'}</td>
+                            <td class="p-4">
+                                <span class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-3 py-1 rounded-full text-xs font-bold">
+                                    Registered
+                                </span>
+                            </td>
+                        </tr>
+                    `).join('');
+                } else {
+                    list.innerHTML = `
+                        <tr>
+                            <td colspan="3" class="p-8 text-center text-slate-500">
+                                <i class="fa fa-info-circle text-2xl mb-2 text-slate-600 block"></i>
+                                No users found in the 'profiles' table. <br>
+                                <span class="text-xs opacity-70">Ensure you have created a public 'profiles' table in Supabase.</span>
+                            </td>
+                        </tr>`;
+                }
+            } catch (err) {
+                list.innerHTML = `
+                    <tr>
+                        <td colspan="3" class="p-8 text-center text-red-400">
+                            <i class="fa fa-triangle-exclamation text-2xl mb-2 block"></i>
+                            Could not load users.<br>
+                            <span class="text-xs opacity-70">Create a 'profiles' table in Supabase with 'id', 'full_name', and 'email' columns to view users here.</span>
+                        </td>
+                    </tr>`;
+            }
+        }
+
+        // ========== EDIT PROFILE LOGIC ==========
+        document.getElementById('editProfileForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const newName = document.getElementById('editName').value;
+            const newPassword = document.getElementById('editPassword').value;
+            const confirmPassword = document.getElementById('editConfirm').value;
+            const errorDiv = document.getElementById('editErrorProfile');
+            const successDiv = document.getElementById('editSuccessProfile');
+
+            errorDiv.classList.add('hidden');
+            successDiv.classList.add('hidden');
+
+            if (newPassword && newPassword !== confirmPassword) {
+                errorDiv.textContent = 'Passwords do not match';
+                errorDiv.classList.remove('hidden');
+                return;
+            }
+
+            try {
+                const { error: updateError } = await supabaseClient.auth.updateUser({
+                    data: { full_name: newName },
+                    ...(newPassword && { password: newPassword })
+                });
+
+                if (updateError) {
+                    errorDiv.textContent = updateError.message;
+                    errorDiv.classList.remove('hidden');
+                } else {
+                    // Also update the public profiles table
+                    await supabaseClient.from('profiles').update({ full_name: newName }).eq('id', currentUser.id);
+
+                    currentUser = (await supabaseClient.auth.getUser()).data.user;
+                    loadUserProfile();
+                    successDiv.textContent = 'Profile updated successfully!';
+                    successDiv.classList.remove('hidden');
+                    setTimeout(() => navTo('profile'), 1500);
+                }
+            } catch (err) {
+                errorDiv.textContent = 'An error occurred. Please try again.';
+                errorDiv.classList.remove('hidden');
+            }
+        });
+
+        // ========== NAVIGATION ==========
         const menuBtn = document.getElementById('menu-btn');
         const sidebar = document.getElementById('sidebar');
         const overlay = document.getElementById('sidebar-overlay');
@@ -397,97 +889,37 @@
             sidebar.classList.toggle('active');
             overlay.classList.toggle('hidden');
         }
-
         menuBtn.addEventListener('click', toggleMenu);
         overlay.addEventListener('click', toggleMenu);
 
         function navTo(pageId) {
-            // Hide all pages except the target one
-            document.querySelectorAll('.page-content').forEach(p => {
-                if(!p.classList.contains('hidden')) p.classList.add('hidden');
-            });
+            document.querySelectorAll('.page-content').forEach(p => p.classList.add('hidden'));
             document.getElementById(pageId).classList.remove('hidden');
             
-            // Auto-fetch actions on tab navigation
             if(pageId === 'football') fetchScores();
+            if(pageId === 'admin') loadAdminData();
             
-            // Close mobile menu on click
-            if(window.innerWidth < 768 && sidebar.classList.contains('active')) {
-                toggleMenu();
-            }
+            if(window.innerWidth < 768 && sidebar.classList.contains('active')) toggleMenu();
         }
 
-        // --- DEVTRIX AI INTEGRATION ---
-        const chatBox = document.getElementById('chatBox');
-        const aiInput = document.getElementById('aiInput');
-        const sendAiBtn = document.getElementById('sendAiBtn');
-
-        async function getAIResponse(query) {
-            try {
-                const url = `${PRINCE_BASE}/ai/ai?apikey=${PRINCE_KEY}&q=${encodeURIComponent(query)}`;
-                const response = await fetch(url);
-                if (!response.ok) throw new Error("API Connection Failed");
-                
-                const data = await response.json();
-                return data.result || data.response || "I processed your request but the response format was unexpected.";
-            } catch (error) {
-                console.error(error);
-                return "System Error: Unable to reach the intelligence core. Please check your connection.";
-            }
-        }
-
-        function appendMessage(role, text) {
-            const msgDiv = document.createElement('div');
-            msgDiv.className = `flex gap-4 max-w-[85%] ${role === 'user' ? 'user-message' : 'ai-message'}`;
-            
-            const icon = role === 'ai' ? 'fa-robot' : 'fa-user';
-            const avatarStyle = role === 'ai' 
-                ? 'border-amber-500/30 text-amber-500' 
-                : 'border-white/10 text-white bg-[#1a1a1a]';
-            
-            msgDiv.innerHTML = `
-                <div class="w-10 h-10 rounded-full border bg-[#222] ${avatarStyle} flex items-center justify-center shrink-0">
-                    <i class="fa-solid ${icon}"></i>
-                </div>
-                <div class="bubble">${text}</div>
-            `;
-            
-            chatBox.appendChild(msgDiv);
-            chatBox.scrollTop = chatBox.scrollHeight;
-        }
-
+        // ========== DEV TRIX AI ==========
         async function handleAiSend() {
+            const aiInput = document.getElementById('aiInput');
             const text = aiInput.value.trim();
             if (!text) return;
-
             appendMessage('user', text);
             aiInput.value = "";
-
-            // Loading state
-            const loadingId = "loading-" + Date.now();
-            const loadingDiv = document.createElement('div');
-            loadingDiv.className = "flex gap-4 max-w-[85%] ai-message";
-            loadingDiv.id = loadingId;
-            loadingDiv.innerHTML = `
-                <div class="w-10 h-10 rounded-full border border-amber-500/30 bg-[#222] text-amber-500 flex items-center justify-center shrink-0">
-                    <i class="fa-solid fa-robot"></i>
-                </div>
-                <div class="bubble flex items-center gap-2">
-                    <span class="w-2 h-2 bg-amber-500 rounded-full animate-bounce"></span>
-                    <span class="w-2 h-2 bg-amber-500 rounded-full animate-bounce" style="animation-delay: 0.2s"></span>
-                    <span class="w-2 h-2 bg-amber-500 rounded-full animate-bounce" style="animation-delay: 0.4s"></span>
-                </div>
-            `;
-            chatBox.appendChild(loadingDiv);
-            chatBox.scrollTop = chatBox.scrollHeight;
-
-            const aiResponse = await getAIResponse(text);
-            
-            document.getElementById(loadingId).remove();
-            appendMessage('ai', aiResponse);
+            setTimeout(() => appendMessage('ai', "I am currently processing your request..."), 1000);
         }
-
+        function appendMessage(role, text) {
+            const chatBox = document.getElementById('chatBox');
+            const msgDiv = document.createElement('div');
+            msgDiv.className = `flex gap-4 max-w-[85%] ${role === 'user' ? 'user-message' : 'ai-message'}`;
+            msgDiv.innerHTML = `<div class="bubble">${text}</div>`;
+            chatBox.appendChild(msgDiv);
+        }
         function clearChat() {
+            const chatBox = document.getElementById('chatBox');
             chatBox.innerHTML = `
                 <div class="flex gap-4 ai-message max-w-[85%]">
                     <div class="w-10 h-10 rounded-full border border-amber-500/30 bg-[#222] text-amber-500 flex items-center justify-center shrink-0">
@@ -497,200 +929,153 @@
                 </div>
             `;
         }
+        document.getElementById('sendAiBtn').addEventListener('click', handleAiSend);
 
-        sendAiBtn?.addEventListener('click', handleAiSend);
-        aiInput?.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') handleAiSend();
+        // ========== LIVE TV STREAMER LOGIC ==========
+        const TV_API_URL = `${PRINCE_BASE}/newsstreaming/all?apikey=${PRINCE_KEY}`;
+        const tvVideoElement = document.getElementById('video-player');
+        const tvPlaceholder = document.getElementById('video-placeholder');
+        const tvChannelList = document.getElementById('channel-list');
+        const tvNowPlaying = document.querySelector('#now-playing span:last-child');
+        const tvStatusIndicator = document.getElementById('status-indicator');
+        let tvHlsInstance;
+
+        function toggleChannelDropdown() {
+            const list = document.getElementById('channel-dropdown-list');
+            const icon = document.getElementById('dropdown-icon');
+            list.classList.toggle('hidden');
+            icon.classList.toggle('rotate-180');
+        }
+
+        document.addEventListener('click', (e) => {
+            const dropdown = document.getElementById('channel-dropdown-list');
+            const btn = document.getElementById('channel-dropdown-btn');
+            if (dropdown && btn) {
+                if (!dropdown.classList.contains('hidden') && !btn.contains(e.target) && !dropdown.contains(e.target)) {
+                    dropdown.classList.add('hidden');
+                    document.getElementById('dropdown-icon').classList.remove('rotate-180');
+                }
+            }
         });
 
-        // --- MUSIC LAB INTEGRATION (NO LYRICS) ---
-        async function searchMusic() {
-            const query = document.getElementById('musicIn').value;
-            const out = document.getElementById('musicOut');
-            if(!query) return;
-
-            out.innerHTML = `<div class="p-20 text-center animate-pulse text-indigo-400">Syncing with Music Cluster...</div>`;
-
-            try {
-                const audioRes = await fetch(`${CYRIL_BASE}/play?query=${encodeURIComponent(query)}`);
-                const audioData = await audioRes.json();
-
-                if(audioData.status) {
-                    const track = audioData.result;
-
-                    out.innerHTML = `
-                        <div class="card-glow glass-panel p-6 rounded-3xl flex flex-col md:flex-row items-center gap-8">
-                            <img src="${track.thumbnail}" class="w-40 h-40 rounded-2xl shadow-2xl border-2 border-indigo-500/20">
-                            <div class="flex-1 text-center md:text-left">
-                                <h3 class="text-2xl font-black mb-1">${track.title}</h3>
-                                <p class="text-indigo-400 text-sm mb-4 uppercase font-bold tracking-widest">${track.published}</p>
-                                <div class="flex flex-wrap justify-center md:justify-start gap-3 mb-6 text-[10px] text-slate-400">
-                                    <span class="bg-white/5 px-3 py-1 rounded-full border border-white/5">${track.duration}</span>
-                                    <span class="bg-white/5 px-3 py-1 rounded-full border border-white/5">${parseInt(track.views).toLocaleString()} Views</span>
-                                </div>
-                                <a href="${track.download_url}" target="_blank" class="inline-flex items-center gap-2 bg-indigo-500 text-white px-8 py-3 rounded-xl font-bold hover:bg-indigo-600 transition">
-                                    <i class="fa fa-download"></i> DOWNLOAD MP3
-                                </a>
-                            </div>
-                        </div>
-                    `;
-                } else {
-                    out.innerHTML = `<p class="text-center text-red-400">Search Failed: Cloud data unavailable.</p>`;
-                }
-            } catch (err) {
-                out.innerHTML = `<p class="text-center text-red-500">Node Error: Failed to fetch API data.</p>`;
+        function playStream(url, name, listItemElement) {
+            document.querySelectorAll('.channel-item').forEach(el => el.classList.remove('active'));
+            listItemElement.classList.add('active');
+            
+            tvNowPlaying.textContent = `Streaming: ${name}`;
+            document.getElementById('dropdown-selected-text').textContent = name;
+            tvStatusIndicator.classList.replace('bg-slate-600', 'bg-red-500');
+            tvStatusIndicator.classList.add('animate-pulse');
+            
+            document.getElementById('channel-dropdown-list').classList.add('hidden');
+            document.getElementById('dropdown-icon').classList.remove('rotate-180');
+            
+            tvPlaceholder.classList.add('hidden');
+            tvVideoElement.classList.add('visible');
+            
+            if (Hls.isSupported()) {
+                if (tvHlsInstance) tvHlsInstance.destroy();
+                tvHlsInstance = new Hls();
+                tvHlsInstance.loadSource(url);
+                tvHlsInstance.attachMedia(tvVideoElement);
+                tvHlsInstance.on(Hls.Events.MANIFEST_PARSED, () => tvVideoElement.play());
+            } else if (tvVideoElement.canPlayType('application/vnd.apple.mpegurl')) {
+                tvVideoElement.src = url;
+                tvVideoElement.addEventListener('loadedmetadata', () => tvVideoElement.play());
             }
         }
 
-        // --- FOOTBALL INTEGRATION ---
-        async function fetchScores() {
-            const icon = document.getElementById('refresh-icon');
-            const container = document.getElementById('matches-container');
-            icon.classList.add('spinning');
-            
+        async function fetchChannels() {
             try {
-                const response = await fetch(`${PRINCE_BASE}/football/livescore2?apikey=${PRINCE_KEY}`);
+                const response = await fetch(TV_API_URL);
                 const data = await response.json();
-
-                if (data.success) {
-                    document.getElementById('match-count').innerText = `${data.result.totalMatches} Matches Live Now`;
-                    container.innerHTML = '';
-                    
-                    data.result.matches.forEach(match => {
-                        const isLive = !match.status.includes("Full Time");
-                        const card = `
-                            <div class="card-glow glass-panel rounded-2xl overflow-hidden">
-                                <div class="px-4 py-2 border-b border-white/5 flex justify-between items-center bg-white/5">
-                                    <span class="text-[9px] font-bold text-slate-500 uppercase tracking-tighter">${match.league}</span>
-                                    <span class="text-[9px] font-bold ${isLive ? 'text-emerald-400 animate-pulse' : 'text-slate-500'}">${match.status}</span>
-                                </div>
-                                <div class="p-6 flex items-center justify-between gap-4">
-                                    <div class="flex-1 flex flex-col items-center text-center">
-                                        <img src="${match.homeLogo}" class="w-10 h-10 mb-2 object-contain">
-                                        <span class="text-[10px] font-bold uppercase">${match.homeTeam}</span>
-                                    </div>
-                                    <div class="flex flex-col items-center">
-                                        <div class="text-2xl font-black tracking-tighter">
-                                            ${match.homeScore} <span class="text-slate-700 mx-1">-</span> ${match.awayScore}
-                                        </div>
-                                    </div>
-                                    <div class="flex-1 flex flex-col items-center text-center">
-                                        <img src="${match.awayLogo}" class="w-10 h-10 mb-2 object-contain">
-                                        <span class="text-[10px] font-bold uppercase">${match.awayTeam}</span>
-                                    </div>
-                                </div>
-                            </div>
-                        `;
-                        container.insertAdjacentHTML('beforeend', card);
-                    });
+                if (data.success && data.result && data.result.channelsByCategory) {
+                    let allChannels = [];
+                    for (const category in data.result.channelsByCategory) {
+                        allChannels = allChannels.concat(data.result.channelsByCategory[category]);
+                    }
+                    renderChannelList(allChannels);
                 }
             } catch (error) {
-                console.error("Score Error:", error);
-            } finally {
-                setTimeout(() => icon.classList.remove('spinning'), 800);
+                tvNowPlaying.textContent = "Error loading TV channels.";
             }
         }
 
-        // --- APK LOGIC ---
-        async function fetchApk() {
-            const query = document.getElementById('apkIn').value;
-            const loader = document.getElementById('apkLoader');
-            const result = document.getElementById('apkResult');
-            if (!query) return;
+        function renderChannelList(channels) {
+            tvChannelList.innerHTML = ''; 
+            channels.forEach(channel => {
+                if (!channel.url) return;
+                const item = document.createElement('div');
+                item.className = 'channel-item rounded-xl mb-1';
+                const logoSrc = channel.logo ? channel.logo : 'https://via.placeholder.com/40/000000/d4af37?text=TV';
 
-            loader.classList.remove('hidden');
-            result.classList.add('hidden');
+                item.innerHTML = `
+                    <img src="${logoSrc}" alt="${channel.name}" class="channel-logo" onerror="this.src='https://via.placeholder.com/40/000000/d4af37?text=TV'">
+                    <span class="text-sm font-semibold text-slate-300 group-hover:text-white transition">${channel.name}</span>
+                `;
+                item.addEventListener('click', function() { playStream(channel.url, channel.name, this); });
+                tvChannelList.appendChild(item);
+            });
+        }
+
+        // ========== LOGO DESIGNER LOGIC ==========
+        async function generateLogo() {
+            const textInput = document.getElementById('logoText').value.trim();
+            const style = document.getElementById('logoStyle').value;
+            
+            if (!textInput) return alert("Please enter text for your logo.");
+
+            const placeholder = document.getElementById('placeholderText');
+            const loading = document.getElementById('logo-loading');
+            const resultContainer = document.getElementById('resultContainer');
+            const logoImage = document.getElementById('logoImage');
+            const downloadBtn = document.getElementById('downloadBtn');
+
+            placeholder.classList.add('hidden');
+            resultContainer.classList.add('hidden');
+            loading.classList.remove('hidden');
+            loading.classList.add('flex');
+
+            const encodedText = encodeURIComponent(textInput).replace(/%20/g, '+');
+            const apiUrl = `${PRINCE_BASE}/ephoto360/${style}?apikey=${PRINCE_KEY}&text=${encodedText}`;
 
             try {
-                const res = await fetch(`${PRINCE_BASE}/download/apkdl?apikey=${PRINCE_KEY}&appName=${encodeURIComponent(query)}`);
-                const data = await res.json();
-                loader.classList.add('hidden');
+                const response = await fetch(apiUrl);
+                const contentType = response.headers.get("content-type");
+                let finalImageUrl = "";
 
-                if (data.success) {
-                    document.getElementById('appIcon').src = data.result.appicon;
-                    document.getElementById('resAppName').innerText = data.result.appname;
-                    document.getElementById('resDev').innerText = "Developer: " + data.result.developer;
-                    document.getElementById('downloadLink').href = data.result.download_url;
-                    result.classList.remove('hidden');
+                if (contentType && contentType.includes("application/json")) {
+                    const data = await response.json();
+                    if (data.status === 200 && data.success && data.result && data.result.image_url) {
+                        finalImageUrl = data.result.image_url;
+                    } else {
+                        finalImageUrl = data.url || data.image || data.message;
+                    }
+                } else {
+                    const blob = await response.blob();
+                    finalImageUrl = URL.createObjectURL(blob);
                 }
-            } catch (e) { loader.classList.add('hidden'); }
+
+                logoImage.onload = () => {
+                    loading.classList.add('hidden');
+                    loading.classList.remove('flex');
+                    resultContainer.classList.remove('hidden');
+                };
+                logoImage.src = finalImageUrl;
+                downloadBtn.href = finalImageUrl;
+
+            } catch (error) {
+                alert("Failed to generate logo. API may be down.");
+                loading.classList.add('hidden');
+                loading.classList.remove('flex');
+                placeholder.classList.remove('hidden');
+            }
         }
 
-        // --- FONT LOGIC ---
-        async function generateFonts() {
-            const text = document.getElementById('fontIn').value;
-            const resDiv = document.getElementById('fontResults');
-            const loader = document.getElementById('fontLoader');
-            if (!text) return;
-
-            loader.classList.remove('hidden');
-            resDiv.innerHTML = '';
-
-            try {
-                const res = await fetch(`${PRINCE_BASE}/tools/fancy?apikey=${PRINCE_KEY}&text=${encodeURIComponent(text)}`);
-                const data = await res.json();
-                loader.classList.add('hidden');
-
-                if (data.success) {
-                    data.results.forEach(item => {
-                        const div = document.createElement('div');
-                        div.className = 'glass-panel p-4 rounded-xl flex justify-between items-center border border-white/5';
-                        div.innerHTML = `
-                            <div>
-                                <p class="text-[10px] text-amber-500 uppercase font-bold mb-1">${item.name}</p>
-                                <p class="text-lg">${item.result}</p>
-                            </div>
-                            <button onclick="copyFont('${item.result.replace(/'/g, "\\'")}', this)" class="text-xs bg-white/5 px-3 py-2 rounded-lg hover:bg-amber-500 transition">Copy</button>
-                        `;
-                        resDiv.appendChild(div);
-                    });
-                }
-            } catch (e) { loader.classList.add('hidden'); }
-        }
-
-        function copyFont(text, btn) {
-            navigator.clipboard.writeText(text);
-            const old = btn.innerText;
-            btn.innerText = "Copied!";
-            setTimeout(() => btn.innerText = old, 2000);
-        }
-
-        // --- QUOTE LOGIC ---
-        async function getAnimeQuote() {
-            const textEl = document.getElementById('quoteText');
-            const authEl = document.getElementById('quoteAuthor');
-            const animEl = document.getElementById('quoteAnime');
-            const content = document.getElementById('quoteContent');
-
-            textEl.innerText = "Synchronizing wisdom...";
-            authEl.innerText = ""; animEl.innerText = "";
-
-            try {
-                const res = await fetch(`${PRINCE_BASE}/anime/quotes?apikey=${PRINCE_KEY}`);
-                const data = await res.json();
-
-                if (data.success) {
-                    content.classList.remove('fade-in');
-                    void content.offsetWidth;
-                    content.classList.add('fade-in');
-
-                    textEl.innerText = data.result.quote;
-                    authEl.innerText = `- ${data.result.character}`;
-                    animEl.innerText = data.result.anime;
-                }
-            } catch (e) { textEl.innerText = "Connection lost to the Dojo."; }
-        }
-
-        // Enter key listeners for other forms
-        document.getElementById('musicIn')?.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') searchMusic();
-        });
-        document.getElementById('apkIn')?.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') fetchApk();
-        });
-        document.getElementById('fontIn')?.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') generateFonts();
-        });
+        // ========== INIT ==========
+        checkAuthStatus();
     </script>
 </body>
 </html>
+
+
