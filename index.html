@@ -2,15 +2,690 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Under Maintenance</title>
-    <link rel="stylesheet" href="style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    
+    <title>Devtrix | Next Gen Utility Hub</title>
+    <meta name="title" content="Devtrix v3 - Next Generation Utility Hub">
+    <meta name="description" content="Devtrix is an all-in-one utility platform featuring AI chat, music downloads, live sports, APKs, and more. Built by Exton.">
+    
+    <!-- Using the actual zone domain -->
+    <meta property="og:url" content="https://devtrix.zone.id">
+    <meta property="og:title" content="Devtrix v3 - Next Generation Utility Hub">
+    <meta name="author" content="Exton">
+    
+    <!-- Styling & Icons -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* Swapping to a more tech/cyberpunk font vibe */
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;600;700&display=swap');
+        
+        /* Core Matte Black Theme */
+        body { 
+            background: #0a0a0a; /* Deep matte black */
+            background-image: radial-gradient(circle at 50% 0%, #1a1a1a 0%, #0a0a0a 70%);
+            color: #e5e5e5; 
+            font-family: 'Space Grotesk', sans-serif; 
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        main {
+            flex: 1;
+            overflow: hidden;
+        }
+
+        /* Heavy Glassmorphism with gold tinting */
+        .glass-panel { 
+            background: rgba(15, 15, 15, 0.65); 
+            backdrop-filter: blur(20px); 
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(251, 191, 36, 0.15); /* Tailwind amber-400 opacity */
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+        }
+
+        .card-glow {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .card-glow:hover {
+            border-color: #fbbf24;
+            box-shadow: 0 0 25px rgba(251, 191, 36, 0.15);
+            transform: translateY(-3px);
+        }
+
+        /* Cyberpunk gold gradients */
+        .gradient-btn { 
+            background: linear-gradient(135deg, #fbbf24 0%, #d97706 100%);
+            color: #000;
+        }
+        
+        .gradient-btn:hover {
+            background: linear-gradient(135deg, #fcd34d 0%, #b45309 100%);
+        }
+
+        .cyber-text {
+            background: linear-gradient(to right, #fde68a, #d97706);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Mobile Menu hamburger animation */
+        #menu-btn.open .line-1 { transform: rotate(45deg) translate(5px, 5px); background: #fbbf24;}
+        #menu-btn.open .line-2 { opacity: 0; }
+        #menu-btn.open .line-3 { transform: rotate(-45deg) translate(7px, -7px); background: #fbbf24;}
+
+        @media (max-width: 768px) {
+            #sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease-in-out;
+                z-index: 50;
+            }
+            #sidebar.active { transform: translateX(0); }
+        }
+
+        /* Utils */
+        .spinning { animation: spin 1s linear infinite; }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        
+        .fade-in { animation: fadeIn 0.4s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* Custom scrollbar for that matte feel */
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: #0a0a0a; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #fbbf24; }
+
+        /* Chat bubbles */
+        .bubble {
+            padding: 1rem 1.2rem;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            word-wrap: break-word;
+        }
+        .user-message { flex-direction: row-reverse; align-self: flex-end; }
+        .user-message .bubble {
+            border-color: rgba(251, 191, 36, 0.4);
+            background: rgba(251, 191, 36, 0.08);
+            color: #fde68a;
+        }
+        .ai-message { align-self: flex-start; }
+
+        footer {
+            background: #0a0a0a;
+            border-top: 1px solid rgba(251, 191, 36, 0.1);
+            padding: 1.2rem;
+            font-size: 0.8rem;
+            flex-shrink: 0;
+        }
+    </style>
 </head>
-<body>
-    <div class="maintenance-container">
-        <div class="icon">🚧</div>
-        <h1>We'll be back soon!</h1>
-        <p>Sorry for the inconvenience, but we're performing some scheduled maintenance at the moment. We'll be back online shortly.</p>
+<body class="flex flex-col h-screen">
+
+    <!-- Mobile Top Bar -->
+    <div class="md:hidden fixed top-0 w-full glass-panel z-50 p-4 flex justify-between items-center border-b-0">
+        <span class="text-xl font-bold tracking-widest cyber-text">DEVTRIX</span>
+        <button id="menu-btn" class="flex flex-col gap-1.5 focus:outline-none p-2">
+            <div class="w-6 h-0.5 bg-gray-300 transition-all line-1"></div>
+            <div class="w-6 h-0.5 bg-gray-300 transition-all line-2"></div>
+            <div class="w-6 h-0.5 bg-gray-300 transition-all line-3"></div>
+        </button>
     </div>
+
+    <!-- Backdrop for mobile menu -->
+    <div id="sidebar-overlay" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden z-40"></div>
+
+    <!-- Main Sidebar -->
+    <aside id="sidebar" class="fixed md:relative w-72 h-full glass-panel flex flex-col p-6 border-r border-white/5">
+        <div class="mb-10 hidden md:block">
+            <h1 class="text-3xl font-bold tracking-tighter cyber-text">DEVTRIX</h1>
+            <p class="text-[10px] text-zinc-500 uppercase tracking-[0.2em] mt-1">System v3.0</p>
+        </div>
+
+        <nav class="flex-1 space-y-2 overflow-y-auto mt-4">
+            <button onclick="navTo('home')" class="nav-item w-full flex items-center p-3 rounded-xl hover:bg-white/5 transition group border border-transparent hover:border-amber-500/20">
+                <i class="fa fa-terminal w-8 text-amber-500"></i> <span class="tracking-wide">Dashboard</span>
+            </button>
+            <button onclick="navTo('ai-chat')" class="nav-item w-full flex items-center p-3 rounded-xl hover:bg-white/5 transition group border border-transparent hover:border-amber-500/20">
+                <i class="fa fa-microchip w-8 text-amber-500"></i> <span class="tracking-wide">AI Core</span>
+            </button>
+            <button onclick="navTo('music')" class="nav-item w-full flex items-center p-3 rounded-xl hover:bg-white/5 transition group border border-transparent hover:border-amber-500/20">
+                <i class="fa fa-headphones w-8 text-amber-500"></i> <span class="tracking-wide">Audio Lab</span>
+            </button>
+            <button onclick="navTo('football')" class="nav-item w-full flex items-center p-3 rounded-xl hover:bg-white/5 transition group border border-transparent hover:border-amber-500/20">
+                <i class="fa fa-futbol w-8 text-amber-500"></i> <span class="tracking-wide">Live Sports</span>
+            </button>
+            <button onclick="navTo('apk')" class="nav-item w-full flex items-center p-3 rounded-xl hover:bg-white/5 transition group border border-transparent hover:border-amber-500/20">
+                <i class="fa fa-box-open w-8 text-amber-500"></i> <span class="tracking-wide">APK Forge</span>
+            </button>
+            <button onclick="navTo('fonts')" class="nav-item w-full flex items-center p-3 rounded-xl hover:bg-white/5 transition group border border-transparent hover:border-amber-500/20">
+                <i class="fa fa-pen-nib w-8 text-amber-500"></i> <span class="tracking-wide">Text Stylist</span>
+            </button>
+            <button onclick="navTo('quotes')" class="nav-item w-full flex items-center p-3 rounded-xl hover:bg-white/5 transition group border border-transparent hover:border-amber-500/20">
+                <i class="fa fa-bolt w-8 text-amber-500"></i> <span class="tracking-wide">Anime Zen</span>
+            </button>
+        </nav>
+
+        <div class="mt-auto pt-6">
+            <div class="flex items-center gap-3 p-3 bg-black/40 border border-white/5 rounded-xl">
+                <div class="w-10 h-10 rounded-lg gradient-btn flex items-center justify-center font-bold text-lg shadow-[0_0_10px_rgba(251,191,36,0.3)]">E</div>
+                <div>
+                    <p class="text-sm font-bold text-gray-200">Exton</p>
+                    <p class="text-[10px] text-amber-500/70">SysAdmin • 🇿🇼</p>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <main class="flex-1 flex flex-col pt-20 md:pt-8 px-4 md:px-12 pb-20 md:pb-12 overflow-hidden">
+        
+        <!-- DASHBOARD -->
+        <section id="home" class="page-content overflow-y-auto h-full pr-2">
+            <div class="max-w-5xl">
+                <div class="p-10 rounded-3xl glass-panel border border-amber-500/20 mb-10 relative overflow-hidden">
+                    <!-- little aesthetic glow in the background -->
+                    <div class="absolute -right-20 -top-20 w-64 h-64 bg-amber-600/10 blur-[80px] rounded-full pointer-events-none"></div>
+                    
+                    <h2 class="text-4xl md:text-5xl font-bold mb-4 leading-tight">Welcome to the <br><span class="cyber-text">Devtrix Hub.</span></h2>
+                    <p class="text-zinc-400 max-w-lg mb-8 text-sm md:text-base">Your matte-black utility suite. Execute queries, pull MP3s, check live fixtures, or just mess around with the AI core.</p>
+                    <div class="flex gap-4 flex-wrap">
+                        <button onclick="navTo('ai-chat')" class="gradient-btn px-8 py-3 rounded-xl font-bold tracking-wide shadow-lg">Init AI Core</button>
+                        <button onclick="navTo('music')" class="bg-[#111] border border-zinc-800 px-8 py-3 rounded-xl font-bold text-zinc-300 hover:text-amber-500 hover:border-amber-500/50 transition">Audio Lab</button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+                    <div class="card-glow glass-panel p-6 rounded-2xl cursor-pointer" onclick="navTo('ai-chat')">
+                        <h3 class="text-lg font-bold text-amber-500 mb-2"><i class="fa fa-microchip mr-2"></i> AI Core</h3>
+                        <p class="text-zinc-500 text-sm">Tap into the LLM. Ask questions, debug code, or just chat.</p>
+                    </div>
+                    <div class="card-glow glass-panel p-6 rounded-2xl cursor-pointer" onclick="navTo('music')">
+                        <h3 class="text-lg font-bold text-amber-500 mb-2"><i class="fa fa-headphones mr-2"></i> Audio Fetch</h3>
+                        <p class="text-zinc-500 text-sm">Direct MP3 downloads from the cloud cluster. Fast and simple.</p>
+                    </div>
+                    <div class="card-glow glass-panel p-6 rounded-2xl cursor-pointer" onclick="navTo('football')">
+                        <h3 class="text-lg font-bold text-amber-500 mb-2"><i class="fa fa-futbol mr-2"></i> Live Arena</h3>
+                        <p class="text-zinc-500 text-sm">Real-time match data. Don't miss a single goal.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- AI CHAT -->
+        <section id="ai-chat" class="page-content hidden flex flex-col h-full max-w-4xl w-full mx-auto">
+            <div class="flex justify-between items-center mb-6 shrink-0 border-b border-white/5 pb-4">
+                <div>
+                    <h2 class="text-2xl font-bold cyber-text">Terminal // AI Core</h2>
+                    <p class="text-[10px] text-zinc-500 uppercase tracking-widest mt-1 flex items-center gap-2">
+                        <span class="w-1.5 h-1.5 inline-block bg-amber-500 rounded-full animate-pulse shadow-[0_0_5px_#fbbf24]"></span> Connection Stable
+                    </p>
+                </div>
+                <button onclick="clearChat()" title="Wipe Memory" class="p-2.5 bg-[#111] rounded-lg border border-zinc-800 hover:border-amber-500/50 text-zinc-500 hover:text-amber-500 transition">
+                    <i class="fa fa-trash-can"></i>
+                </button>
+            </div>
+
+            <div id="chatBox" class="flex-1 overflow-y-auto flex flex-col gap-5 mb-6 pr-2">
+                <div class="flex gap-4 ai-message max-w-[85%]">
+                    <div class="w-10 h-10 rounded-lg border border-amber-500/30 bg-[#111] text-amber-500 flex items-center justify-center shrink-0 shadow-[0_0_10px_rgba(251,191,36,0.1)]">
+                        <i class="fa-solid fa-terminal"></i>
+                    </div>
+                    <div class="bubble text-zinc-300">System initialized. Awaiting user input...</div>
+                </div>
+            </div>
+
+            <div class="mt-auto relative shrink-0">
+                <input type="text" id="aiInput" placeholder="Enter command or question..." autocomplete="off" class="w-full bg-[#0d0d0d] border border-zinc-800 p-4 pr-16 rounded-xl focus:border-amber-500/50 focus:ring-1 ring-amber-500/50 outline-none text-zinc-200 transition font-mono text-sm">
+                <button id="sendAiBtn" class="absolute right-2 top-2 bottom-2 gradient-btn w-12 rounded-lg flex items-center justify-center">
+                    <i class="fa-solid fa-paper-plane text-black"></i>
+                </button>
+            </div>
+        </section>
+
+        <!-- AUDIO LAB (Stripped Lyrics) -->
+        <section id="music" class="page-content hidden overflow-y-auto h-full pr-2">
+            <div class="max-w-4xl mx-auto">
+                <h2 class="text-3xl font-bold mb-8 cyber-text">Audio Lab</h2>
+                <div class="flex flex-col md:flex-row gap-3 mb-10">
+                    <input id="musicIn" type="text" placeholder="Track name or artist..." class="flex-1 bg-[#0d0d0d] border border-zinc-800 p-4 rounded-xl focus:border-amber-500/50 outline-none text-white transition">
+                    <button onclick="searchMusic()" class="gradient-btn px-10 py-4 rounded-xl font-bold tracking-wide">Fetch</button>
+                </div>
+                <div id="musicOut" class="w-full">
+                    <p class="text-center text-zinc-600 py-20 font-mono text-sm">Waiting for query...</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- FOOTBALL -->
+        <section id="football" class="page-content hidden overflow-y-auto h-full pr-2">
+            <div class="max-w-5xl mx-auto">
+                <div class="flex justify-between items-end mb-8 border-b border-white/5 pb-4">
+                    <div>
+                        <h2 class="text-3xl font-bold cyber-text">Live Arena</h2>
+                        <p id="match-count" class="text-[10px] text-zinc-500 uppercase tracking-widest mt-1 font-mono">Scanning data feeds...</p>
+                    </div>
+                    <button onclick="fetchScores()" class="p-2.5 bg-[#111] border border-zinc-800 rounded-lg hover:border-amber-500/50 text-amber-500 transition">
+                        <i id="refresh-icon" class="fa fa-rotate-right"></i>
+                    </button>
+                </div>
+                <div id="matches-container" class="grid grid-cols-1 lg:grid-cols-2 gap-5"></div>
+            </div>
+        </section>
+
+        <!-- APK FORGE -->
+        <section id="apk" class="page-content hidden overflow-y-auto h-full pr-2">
+            <div class="max-w-xl mx-auto">
+                <h2 class="text-3xl font-bold mb-8 cyber-text text-center">APK Forge</h2>
+                <div class="flex gap-3 mb-8">
+                    <input id="apkIn" type="text" placeholder="Package name or app..." class="flex-1 bg-[#0d0d0d] border border-zinc-800 p-4 rounded-xl outline-none focus:border-amber-500/50 transition text-white">
+                    <button onclick="fetchApk()" class="gradient-btn px-6 py-4 rounded-xl font-bold"><i class="fa fa-search"></i></button>
+                </div>
+                
+                <div id="apkLoader" class="hidden text-center py-10 font-mono text-amber-500 text-sm animate-pulse">
+                    [ Locating binary... ]
+                </div>
+                
+                <div id="apkResult" class="hidden card-glow glass-panel p-8 rounded-2xl text-center border border-amber-500/20">
+                    <img id="appIcon" src="" class="w-24 h-24 mx-auto rounded-xl mb-5 shadow-lg">
+                    <h3 id="resAppName" class="text-xl font-bold text-white mb-1"></h3>
+                    <p id="resDev" class="text-zinc-500 text-xs mb-6 font-mono"></p>
+                    <a id="downloadLink" href="#" class="gradient-btn inline-block px-10 py-3 rounded-lg font-bold shadow-lg">Download .APK</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- FONTS -->
+        <section id="fonts" class="page-content hidden overflow-y-auto h-full pr-2">
+            <div class="max-w-2xl mx-auto">
+                <h2 class="text-3xl font-bold mb-8 cyber-text">Text Stylist</h2>
+                <div class="flex flex-col md:flex-row gap-3 mb-8">
+                    <input id="fontIn" type="text" placeholder="Input string..." class="flex-1 bg-[#0d0d0d] border border-zinc-800 p-4 rounded-xl outline-none focus:border-amber-500/50 text-white">
+                    <button onclick="generateFonts()" class="gradient-btn px-8 py-4 rounded-xl font-bold">Compile</button>
+                </div>
+                <div id="fontLoader" class="hidden text-center py-4 font-mono text-amber-500 text-sm">[ Compiling variants... ]</div>
+                <div id="fontResults" class="space-y-3"></div>
+            </div>
+        </section>
+
+        <!-- QUOTES -->
+        <section id="quotes" class="page-content hidden overflow-y-auto h-full pr-2">
+            <div class="max-w-lg mx-auto py-12">
+                <div class="card-glow glass-panel p-10 rounded-3xl text-center relative">
+                    <i class="fa fa-quote-left absolute top-6 left-6 text-2xl text-amber-500/20"></i>
+                    <div id="quoteContent" class="fade-in mt-4">
+                        <p id="quoteText" class="text-lg text-zinc-300 mb-6 leading-relaxed font-light">"Hit the button to pull an anime quote from the database."</p>
+                        <h4 id="quoteAuthor" class="text-amber-500 font-bold uppercase tracking-widest text-sm"></h4>
+                        <p id="quoteAnime" class="text-xs text-zinc-500 mt-1 font-mono"></p>
+                    </div>
+                    <button onclick="getAnimeQuote()" class="gradient-btn mt-8 px-8 py-2.5 rounded-lg font-bold shadow-lg">Fetch Next</button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="w-full relative z-10">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="text-center md:text-left">
+                <p class="text-zinc-500 text-xs tracking-wide">
+                    Built by <span class="text-amber-500 font-bold">Exton</span> | Bulawayo, ZW
+                </p>
+            </div>
+            <div class="flex gap-6 text-xs font-mono">
+                <a href="mailto:Muyambiexton@gmail.com" class="text-zinc-500 hover:text-amber-500 transition">Email_SysAdmin</a>
+                <span class="text-zinc-700">|</span>
+                <span class="text-zinc-600">Devtrix v3.0 © 2026</span>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // --- API Keys (Need to rotate these eventually) ---
+        const PRINCE_KEY = "prince";
+        const PRINCE_BASE = "https://api.princetechn.com/api";
+        const CYRIL_BASE = "https://apis.davidcyril.name.ng";
+
+        // --- DOM Elements & Navigation ---
+        const menuBtn = document.getElementById('menu-btn');
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebar-overlay');
+
+        function toggleMenu() {
+            menuBtn.classList.toggle('open');
+            sidebar.classList.toggle('active');
+            overlay.classList.toggle('hidden');
+        }
+
+        menuBtn.addEventListener('click', toggleMenu);
+        overlay.addEventListener('click', toggleMenu);
+
+        function navTo(pageId) {
+            // Hide all panels
+            document.querySelectorAll('.page-content').forEach(p => {
+                p.classList.add('hidden');
+            });
+            // Show target
+            document.getElementById(pageId).classList.remove('hidden');
+            
+            // Auto-trigger fetches if needed
+            if(pageId === 'football') fetchScores();
+            
+            // Close mobile menu
+            if(window.innerWidth < 768 && sidebar.classList.contains('active')) {
+                toggleMenu();
+            }
+        }
+
+        // --- AI Core Logic ---
+        const chatBox = document.getElementById('chatBox');
+        const aiInput = document.getElementById('aiInput');
+        const sendAiBtn = document.getElementById('sendAiBtn');
+
+        async function getAIResponse(query) {
+            try {
+                const url = `${PRINCE_BASE}/ai/ai?apikey=${PRINCE_KEY}&q=${encodeURIComponent(query)}`;
+                const response = await fetch(url);
+                if (!response.ok) throw new Error("API failed");
+                
+                const data = await response.json();
+                return data.result || data.response || "Data parse error.";
+            } catch (error) {
+                console.error("AI Node offline:", error);
+                return "Connection to AI core failed. Check endpoint status.";
+            }
+        }
+
+        function appendMessage(role, text) {
+            const msgDiv = document.createElement('div');
+            msgDiv.className = `flex gap-4 max-w-[85%] ${role === 'user' ? 'user-message' : 'ai-message'} fade-in`;
+            
+            const icon = role === 'ai' ? 'fa-terminal' : 'fa-user';
+            const avatarStyle = role === 'ai' 
+                ? 'border-amber-500/30 text-amber-500 bg-[#111] shadow-[0_0_10px_rgba(251,191,36,0.1)]' 
+                : 'border-zinc-800 text-zinc-400 bg-[#0a0a0a]';
+            
+            msgDiv.innerHTML = `
+                <div class="w-10 h-10 rounded-lg border ${avatarStyle} flex items-center justify-center shrink-0">
+                    <i class="fa-solid ${icon}"></i>
+                </div>
+                <div class="bubble">${text}</div>
+            `;
+            
+            chatBox.appendChild(msgDiv);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        async function handleAiSend() {
+            const text = aiInput.value.trim();
+            if (!text) return;
+
+            appendMessage('user', text);
+            aiInput.value = "";
+
+            // Injecting loading state
+            const loadingId = "loading-" + Date.now();
+            const loadingDiv = document.createElement('div');
+            loadingDiv.className = "flex gap-4 max-w-[85%] ai-message";
+            loadingDiv.id = loadingId;
+            loadingDiv.innerHTML = `
+                <div class="w-10 h-10 rounded-lg border border-amber-500/30 bg-[#111] text-amber-500 flex items-center justify-center shrink-0">
+                    <i class="fa-solid fa-terminal"></i>
+                </div>
+                <div class="bubble flex items-center gap-2 border-transparent">
+                    <span class="w-1.5 h-1.5 bg-amber-500 rounded-full animate-bounce"></span>
+                    <span class="w-1.5 h-1.5 bg-amber-500 rounded-full animate-bounce" style="animation-delay: 0.15s"></span>
+                    <span class="w-1.5 h-1.5 bg-amber-500 rounded-full animate-bounce" style="animation-delay: 0.3s"></span>
+                </div>
+            `;
+            chatBox.appendChild(loadingDiv);
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            const aiResponse = await getAIResponse(text);
+            
+            document.getElementById(loadingId).remove();
+            appendMessage('ai', aiResponse);
+        }
+
+        function clearChat() {
+            chatBox.innerHTML = `
+                <div class="flex gap-4 ai-message max-w-[85%]">
+                    <div class="w-10 h-10 rounded-lg border border-amber-500/30 bg-[#111] text-amber-500 flex items-center justify-center shrink-0">
+                        <i class="fa-solid fa-terminal"></i>
+                    </div>
+                    <div class="bubble text-zinc-300">Memory wiped. Ready for new instructions.</div>
+                </div>
+            `;
+        }
+
+        sendAiBtn?.addEventListener('click', handleAiSend);
+        aiInput?.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') handleAiSend();
+        });
+
+        // --- Audio Fetch (Lyrics stripped out per requirements) ---
+        async function searchMusic() {
+            const query = document.getElementById('musicIn').value.trim();
+            const out = document.getElementById('musicOut');
+            if(!query) return;
+
+            out.innerHTML = `<div class="py-12 text-center text-amber-500 font-mono text-sm animate-pulse">[ Fetching audio streams... ]</div>`;
+
+            try {
+                // Hitting David Cyril's API for the raw audio data
+                const res = await fetch(`${CYRIL_BASE}/play?query=${encodeURIComponent(query)}`);
+                const data = await res.json();
+
+                if(data.status && data.result) {
+                    const track = data.result;
+                    
+                    // Render clean audio card, no lyrics attached
+                    out.innerHTML = `
+                        <div class="card-glow glass-panel p-6 rounded-2xl flex flex-col md:flex-row items-center gap-8 border border-amber-500/20 max-w-3xl mx-auto fade-in">
+                            <img src="${track.thumbnail}" alt="thumbnail" class="w-40 h-40 object-cover rounded-xl shadow-[0_0_20px_rgba(0,0,0,0.8)] border border-zinc-800">
+                            
+                            <div class="flex-1 text-center md:text-left w-full">
+                                <h3 class="text-xl font-bold mb-2 text-white">${track.title}</h3>
+                                <p class="text-amber-500 text-xs mb-4 uppercase tracking-[0.1em] font-mono">${track.published}</p>
+                                
+                                <div class="flex flex-wrap justify-center md:justify-start gap-3 mb-6 text-xs text-zinc-400 font-mono">
+                                    <span class="bg-[#111] px-3 py-1.5 rounded-md border border-zinc-800"><i class="fa fa-clock mr-1"></i> ${track.duration}</span>
+                                    <span class="bg-[#111] px-3 py-1.5 rounded-md border border-zinc-800"><i class="fa fa-eye mr-1"></i> ${parseInt(track.views).toLocaleString()}</span>
+                                </div>
+                                
+                                <a href="${track.download_url}" target="_blank" class="w-full md:w-auto inline-flex justify-center items-center gap-2 gradient-btn text-black px-8 py-3 rounded-lg font-bold shadow-lg transition">
+                                    <i class="fa fa-download"></i> Get MP3 File
+                                </a>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    out.innerHTML = `<p class="text-center text-red-400 font-mono text-sm">Error: Audio track not found in cluster.</p>`;
+                }
+            } catch (err) {
+                console.error(err);
+                out.innerHTML = `<p class="text-center text-red-500 font-mono text-sm">Network Error: Failed to resolve endpoint.</p>`;
+            }
+        }
+
+        // --- Football Feed ---
+        async function fetchScores() {
+            const icon = document.getElementById('refresh-icon');
+            const container = document.getElementById('matches-container');
+            icon.classList.add('spinning');
+            
+            try {
+                const response = await fetch(`${PRINCE_BASE}/football/livescore2?apikey=${PRINCE_KEY}`);
+                const data = await response.json();
+
+                if (data.success && data.result.matches) {
+                    document.getElementById('match-count').innerText = `Live Feeds: ${data.result.totalMatches}`;
+                    container.innerHTML = '';
+                    
+                    data.result.matches.forEach(match => {
+                        const isLive = !match.status.includes("Full Time");
+                        const statusColor = isLive ? 'text-amber-500 animate-pulse' : 'text-zinc-600';
+                        
+                        const card = `
+                            <div class="card-glow glass-panel rounded-xl overflow-hidden border border-zinc-800/50">
+                                <div class="px-4 py-2 border-b border-zinc-800/50 flex justify-between items-center bg-[#0a0a0a]/50">
+                                    <span class="text-[10px] font-bold text-zinc-400 uppercase tracking-wider truncate max-w-[70%]">${match.league}</span>
+                                    <span class="text-[10px] font-bold ${statusColor} font-mono">${match.status}</span>
+                                </div>
+                                <div class="p-5 flex items-center justify-between gap-2">
+                                    <div class="flex-1 flex flex-col items-center text-center">
+                                        <img src="${match.homeLogo}" class="w-8 h-8 mb-2 object-contain filter drop-shadow-md">
+                                        <span class="text-[10px] font-bold text-zinc-200 leading-tight">${match.homeTeam}</span>
+                                    </div>
+                                    <div class="flex flex-col items-center px-2">
+                                        <div class="text-2xl font-bold cyber-text tracking-widest font-mono">
+                                            ${match.homeScore}<span class="text-zinc-700 mx-1">-</span>${match.awayScore}
+                                        </div>
+                                    </div>
+                                    <div class="flex-1 flex flex-col items-center text-center">
+                                        <img src="${match.awayLogo}" class="w-8 h-8 mb-2 object-contain filter drop-shadow-md">
+                                        <span class="text-[10px] font-bold text-zinc-200 leading-tight">${match.awayTeam}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                        container.insertAdjacentHTML('beforeend', card);
+                    });
+                }
+            } catch (error) {
+                console.error("Score Feed Error:", error);
+                container.innerHTML = `<p class="text-red-500 text-sm font-mono col-span-full text-center">Failed to fetch sports feed.</p>`;
+            } finally {
+                setTimeout(() => icon.classList.remove('spinning'), 800);
+            }
+        }
+
+        // --- APK Logic ---
+        async function fetchApk() {
+            const query = document.getElementById('apkIn').value.trim();
+            const loader = document.getElementById('apkLoader');
+            const result = document.getElementById('apkResult');
+            if (!query) return;
+
+            loader.classList.remove('hidden');
+            result.classList.add('hidden');
+
+            try {
+                const res = await fetch(`${PRINCE_BASE}/download/apkdl?apikey=${PRINCE_KEY}&appName=${encodeURIComponent(query)}`);
+                const data = await res.json();
+                
+                loader.classList.add('hidden');
+
+                if (data.success && data.result) {
+                    document.getElementById('appIcon').src = data.result.appicon;
+                    document.getElementById('resAppName').innerText = data.result.appname;
+                    document.getElementById('resDev').innerText = "DEV: " + data.result.developer;
+                    document.getElementById('downloadLink').href = data.result.download_url;
+                    result.classList.remove('hidden');
+                } else {
+                    alert("APK not found in repository.");
+                }
+            } catch (e) { 
+                loader.classList.add('hidden'); 
+                console.error("APK Fetch Error", e);
+            }
+        }
+
+        // --- Font Stylist ---
+        async function generateFonts() {
+            const text = document.getElementById('fontIn').value.trim();
+            const resDiv = document.getElementById('fontResults');
+            const loader = document.getElementById('fontLoader');
+            if (!text) return;
+
+            loader.classList.remove('hidden');
+            resDiv.innerHTML = '';
+
+            try {
+                const res = await fetch(`${PRINCE_BASE}/tools/fancy?apikey=${PRINCE_KEY}&text=${encodeURIComponent(text)}`);
+                const data = await res.json();
+                loader.classList.add('hidden');
+
+                if (data.success && data.results) {
+                    data.results.forEach(item => {
+                        const div = document.createElement('div');
+                        div.className = 'glass-panel p-4 rounded-xl flex justify-between items-center border border-zinc-800/50 hover:border-amber-500/30 transition';
+                        div.innerHTML = `
+                            <div class="overflow-hidden">
+                                <p class="text-[9px] text-zinc-500 uppercase font-mono mb-1 tracking-widest">${item.name}</p>
+                                <p class="text-lg text-zinc-200 truncate pr-4">${item.result}</p>
+                            </div>
+                            <button onclick="copyFont('${item.result.replace(/'/g, "\\'")}', this)" class="shrink-0 text-xs bg-[#111] border border-zinc-700 px-4 py-2 rounded-lg hover:border-amber-500 hover:text-amber-500 transition font-mono">COPY</button>
+                        `;
+                        resDiv.appendChild(div);
+                    });
+                }
+            } catch (e) { 
+                loader.classList.add('hidden'); 
+                console.error(e);
+            }
+        }
+
+        function copyFont(text, btn) {
+            navigator.clipboard.writeText(text);
+            const old = btn.innerText;
+            btn.innerText = "DONE";
+            btn.classList.add('text-amber-500', 'border-amber-500');
+            setTimeout(() => {
+                btn.innerText = old;
+                btn.classList.remove('text-amber-500', 'border-amber-500');
+            }, 1500);
+        }
+
+        // --- Anime Quotes ---
+        async function getAnimeQuote() {
+            const textEl = document.getElementById('quoteText');
+            const authEl = document.getElementById('quoteAuthor');
+            const animEl = document.getElementById('quoteAnime');
+            const content = document.getElementById('quoteContent');
+
+            textEl.innerText = "[ Syncing database... ]";
+            textEl.classList.add('font-mono', 'text-amber-500', 'text-sm');
+            authEl.innerText = ""; animEl.innerText = "";
+
+            try {
+                const res = await fetch(`${PRINCE_BASE}/anime/quotes?apikey=${PRINCE_KEY}`);
+                const data = await res.json();
+
+                if (data.success && data.result) {
+                    content.classList.remove('fade-in');
+                    void content.offsetWidth; // trigger reflow
+                    content.classList.add('fade-in');
+
+                    textEl.classList.remove('font-mono', 'text-amber-500', 'text-sm');
+                    textEl.innerText = `"${data.result.quote}"`;
+                    authEl.innerText = data.result.character;
+                    animEl.innerText = `// ${data.result.anime}`;
+                }
+            } catch (e) { 
+                textEl.innerText = "Error: Database connection lost."; 
+            }
+        }
+
+        // Note: if VCF-wave acts up again on Vercel, check the build cache
+        
+        // --- Event Listeners for Enter Keys ---
+        document.getElementById('musicIn')?.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') searchMusic();
+        });
+        document.getElementById('apkIn')?.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') fetchApk();
+        });
+        document.getElementById('fontIn')?.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') generateFonts();
+        });
+    </script>
 </body>
 </html>
